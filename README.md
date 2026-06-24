@@ -8,33 +8,52 @@
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge)
 
-**More than just temporary email — your complete privacy-first mail solution**
+**One platform. Infinite possibilities.**
 
-*Send & receive emails • Telegram notifications • Bulk management • Attachments • Export • Search • Multi-language*
+*Disposable throwaways for signups. Professional addresses for your business. Developer inboxes for testing. All under your domain, all free.*
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Why SuperMail?](#-why-supermail) • [Deployment](#-deployment) • [Configuration](#-configuration)
+[Features](#-features) • [Quick Start](#-quick-start) • [Use Cases](#-use-cases) • [Deployment](#-deployment) • [Configuration](#-configuration)
 
 </div>
 
 ---
 
-## 🌟 Why SuperMail?
+## 🌟 What is SuperMail?
 
-**SuperMail** isn't just another temp email service. It's a **full-featured email platform** built for:
+**SuperMail** is a self-hosted email platform that runs 100% free on Cloudflare.
 
-- 🔐 **Privacy-conscious users** who need disposable addresses
-- 👨‍💼 **Teams** managing multiple email accounts
-- 🤖 **Developers** integrating email into workflows
-- 📱 **Power users** who want Telegram notifications
-- 💼 **Businesses** needing bulk email operations
+**Use it your way:**
+- 🎭 **Disposable addresses** — sign up anywhere without revealing your real email
+- 💼 **Business email** — professional addresses for your startup or side project
+- 🧪 **Developer testing** — generate inboxes on the fly for QA and automation
+- 🤖 **Automation** — receive notifications via Telegram, integrate with webhooks
+- 📦 **Bulk operations** — create hundreds of addresses in seconds
 
-**What makes it "Super":**
-- ✉️ **Send emails** — not just receive
-- 📎 **Attachments** — receive and store files
-- 📤 **Export** — backup your emails anytime
-- 🔍 **Search** — find any email instantly
-- 🤖 **Telegram** — real-time notifications
-- 📦 **Bulk ops** — create 100s of addresses at once
+**Why SuperMail?**
+- ✉️ **Send & receive** — full bidirectional email, not just a inbox viewer
+- 📎 **Attachments** — send and receive files
+- 🔍 **Search & export** — find anything, backup everything
+- 💰 **100% free** — no credit card, no surprise bills, ever
+- 🔒 **Your data stays yours** — self-hosted, no tracking, no ads
+
+---
+
+## 🎯 Use Cases
+
+### 🎭 Privacy Shield
+Use disposable addresses for signups. Keep your real inbox clean. Delete the address when you're done.
+
+### 💼 Small Business Email
+Professional email on your domain without paying for Google Workspace or Microsoft 365. `hello@yourbusiness.com`, `support@yourbusiness.com` — all free.
+
+### 🧪 Developer Testing
+Generate test inboxes instantly. Perfect for QA, CI/CD pipelines, and testing email flows. No more `test+random@gmail.com` hacks.
+
+### 🤖 Automation & Notifications
+Receive alerts via Telegram. Forward emails via webhooks. Build workflows that react to incoming mail.
+
+### 📦 Bulk Operations
+Need 100 addresses? 1000? Create them in seconds with fake names or custom patterns. Export credentials in one click.
 
 ---
 

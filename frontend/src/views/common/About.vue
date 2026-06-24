@@ -11,7 +11,8 @@ const { announcement } = useGlobalState()
             
             <div class="hero-section">
                 <h1 class="hero-title">📧 Cloudflare SuperMail</h1>
-                <p class="hero-subtitle">More than just temporary email — your complete privacy-first mail solution</p>
+                <p class="hero-subtitle">One platform. Infinite possibilities.</p>
+                <p class="hero-desc">Disposable throwaways for signups. Professional addresses for your business. Developer inboxes for testing. All under your domain, all free.</p>
             </div>
 
             <n-divider />
@@ -100,6 +101,13 @@ const { announcement } = useGlobalState()
     font-size: 1.1em;
     color: #666;
     margin: 0;
+}
+
+.hero-desc {
+    font-size: 0.95em;
+    color: #888;
+    margin-top: 8px;
+    font-style: italic;
 }
 
 .features-grid {

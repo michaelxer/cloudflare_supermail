@@ -1,6 +1,6 @@
 # 🚀 Cloudflare SuperMail - Deployment Guide for Beginners
 
-**No coding experience needed!** This guide will walk you through setting up your own temporary email service step by step.
+**No coding experience needed!** Set up your own email platform in 30 minutes.
 
 ---
 
@@ -15,13 +15,15 @@
 
 ## 🎯 What You'll Get
 
-- Your own email service (like Gmail, but private!)
-- Unlimited disposable email addresses
-- Send and receive emails
-- **Attachments support** (stored in R2)
-- Telegram notifications for new emails
-- Admin panel to manage everything
-- Export emails as backup
+Your own email platform that works however you want:
+
+- 🎭 **Disposable addresses** for signups and privacy
+- 💼 **Professional addresses** for your business (`hello@yourdomain.com`)
+- 🧪 **Test inboxes** for development and automation
+- ✉️ **Send & receive** emails with attachments
+- 🤖 **Telegram notifications** for instant alerts
+- 📤 **Export & backup** your emails anytime
+- 💰 **100% free** — runs on Cloudflare's free tier
 
 ---
 
