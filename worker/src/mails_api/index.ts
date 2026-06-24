@@ -7,6 +7,7 @@ import auto_reply from './auto_reply'
 import webhook_settings from './webhook_settings';
 import s3_attachment from './s3_attachment';
 import address_auth from './address_auth';
+import export_api from './export_api';
 
 export const api = new Hono<HonoCustomType>()
 
@@ -29,6 +30,9 @@ api.post('/api/attachment/get_url', s3_attachment.getSignedGetUrl)
 api.get('/api/mails', mails_crud.listMails)
 api.get('/api/mail/:mail_id', mails_crud.getMail)
 api.delete('/api/mails/:id', mails_crud.deleteMail)
+
+// export mails
+api.get('/api/export', export_api.exportMails)
 
 // parsed mail (server-side parsed subject/text/html/attachments)
 api.get('/api/parsed_mails', parsed_mail_api.listParsedMails)

@@ -3,7 +3,7 @@ import { watch, onMounted, ref, onBeforeUnmount, computed } from "vue";
 import { useMessage } from 'naive-ui'
 import { useScopedI18n } from '@/i18n/app'
 import { useGlobalState } from '../store'
-import { CloudDownloadRound, ArrowBackIosNewFilled, ArrowForwardIosFilled, InboxRound } from '@vicons/material'
+import { CloudDownloadRound, ArrowBackIosNewFilled, ArrowForwardIosFilled, InboxRound, SearchRound, FileDownloadRound } from '@vicons/material'
 import { useIsMobile } from '../utils/composables'
 import { processItem } from '../utils/email-parser'
 import { utcToLocalDate } from '../utils';
@@ -58,6 +58,20 @@ const props = defineProps({
 })
 
 const localFilterKeyword = ref('')
+
+// Advanced search state
+const showAdvancedSearch = ref(false)
+const searchParams = ref({
+  subject: '',
+  source: '',
+  date_from: '',
+  date_to: ''
+})
+
+// Export state
+const showExportModal = ref(false)
+const exportFormat = ref('json')
+const exportLoading = ref(false)
 
 const {
   isDark, mailboxSplitSize, indexTab, loading, useUTCDate,
@@ -171,8 +185,15 @@ watch([page, pageSize], async ([page, pageSize], [oldPage, oldPageSize]) => {
 
 const refresh = async () => {
   try {
+    // Build search query params
+    const searchQuery = new URLSearchParams();
+    if (searchParams.value.subject) searchQuery.set('subject', searchParams.value.subject);
+    if (searchParams.value.source) searchQuery.set('source', searchParams.value.source);
+    if (searchParams.value.date_from) searchQuery.set('date_from', searchParams.value.date_from);
+    if (searchParams.value.date_to) searchQuery.set('date_to', searchParams.value.date_to);
+    
     const { results, count: totalCount } = await props.fetchMailData(
-      pageSize.value, (page.value - 1) * pageSize.value
+      pageSize.value, (page.value - 1) * pageSize.value, searchQuery.toString()
     );
     loading.value = true;
     rawData.value = await Promise.all(results.map(async (item) => {
@@ -197,6 +218,53 @@ const refresh = async () => {
 const backFirstPageAndRefresh = async () => {
   page.value = 1;
   await refresh();
+}
+
+// Advanced search functions
+const toggleAdvancedSearch = () => {
+  showAdvancedSearch.value = !showAdvancedSearch.value;
+}
+
+const applySearch = async () => {
+  page.value = 1;
+  await refresh();
+}
+
+const clearSearch = async () => {
+  searchParams.value = { subject: '', source: '', date_from: '', date_to: '' };
+  page.value = 1;
+  await refresh();
+}
+
+// Export function
+const exportMails = async () => {
+  try {
+    exportLoading.value = true;
+    const params = new URLSearchParams({ format: exportFormat.value });
+    const response = await fetch(`/api/export?${params.toString()}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+      }
+    });
+    if (!response.ok) throw new Error('Export failed');
+    
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mails-${new Date().toISOString().slice(0, 10)}.${exportFormat.value}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showExportModal.value = false;
+    message.success('Export completed');
+  } catch (error) {
+    message.error(error.message || 'Export failed');
+  } finally {
+    exportLoading.value = false;
+  }
 }
 
 const clickRow = async (row) => {
@@ -370,11 +438,46 @@ onBeforeUnmount(() => {
           <n-button @click="backFirstPageAndRefresh" type="primary" tertiary>
             {{ t('refresh') }}
           </n-button>
+          <n-button @click="toggleAdvancedSearch" :type="showAdvancedSearch ? 'info' : 'default'" tertiary>
+            <template #icon>
+              <n-icon :component="SearchRound" />
+            </template>
+            {{ t('search') }}
+          </n-button>
+          <n-button @click="showExportModal = true" tertiary type="success">
+            <template #icon>
+              <n-icon :component="FileDownloadRound" />
+            </template>
+            {{ t('export') }}
+          </n-button>
           <n-input v-if="showFilterInput" v-model:value="localFilterKeyword"
             :placeholder="t('keywordQueryTip')" style="width: 200px; display: flex; align-items: center;"
             clearable />
         </n-space>
       </div>
+      <!-- Advanced Search Panel -->
+      <n-collapse-transition :show="showAdvancedSearch">
+        <n-card size="small" style="margin-bottom: 10px;">
+          <n-form inline>
+            <n-form-item :label="t('subject')">
+              <n-input v-model:value="searchParams.subject" :placeholder="t('searchBySubject')" clearable style="width: 180px;" />
+            </n-form-item>
+            <n-form-item :label="t('sender')">
+              <n-input v-model:value="searchParams.source" :placeholder="t('searchBySender')" clearable style="width: 180px;" />
+            </n-form-item>
+            <n-form-item :label="t('dateFrom')">
+              <n-date-picker v-model:formatted-value="searchParams.date_from" type="date" value-format="yyyy-MM-dd" style="width: 150px;" />
+            </n-form-item>
+            <n-form-item :label="t('dateTo')">
+              <n-date-picker v-model:formatted-value="searchParams.date_to" type="date" value-format="yyyy-MM-dd" style="width: 150px;" />
+            </n-form-item>
+            <n-form-item>
+              <n-button type="primary" @click="applySearch">{{ t('search') }}</n-button>
+              <n-button @click="clearSearch" style="margin-left: 8px;">{{ t('clear') }}</n-button>
+            </n-form-item>
+          </n-form>
+        </n-card>
+      </n-collapse-transition>
       <n-split class="left" direction="horizontal" :max="0.75" :min="0.25" :default-size="mailboxSplitSize"
         :on-update:size="onSpiltSizeChange">
         <template #1>
@@ -523,6 +626,21 @@ onBeforeUnmount(() => {
             {{ multiActionDeleteProgress.tip }}
           </span>
         </n-progress>
+      </n-space>
+    </n-modal>
+    <!-- Export Modal -->
+    <n-modal v-model:show="showExportModal" preset="dialog" :title="t('exportMails')">
+      <n-space vertical>
+        <n-radio-group v-model:value="exportFormat">
+          <n-space>
+            <n-radio value="json">JSON</n-radio>
+            <n-radio value="csv">CSV</n-radio>
+            <n-radio value="eml">EML</n-radio>
+          </n-space>
+        </n-radio-group>
+        <n-button type="primary" :loading="exportLoading" @click="exportMails">
+          {{ t('export') }}
+        </n-button>
       </n-space>
     </n-modal>
   </div>

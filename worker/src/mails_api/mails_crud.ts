@@ -11,12 +11,38 @@ const listMails = async (c: Context<HonoCustomType>) => {
     if (!address) {
         return c.json({ "error": "No address" }, 400)
     }
-    const { limit, offset } = c.req.query();
+    const { limit, offset, subject, source, date_from, date_to } = c.req.query();
     if (Number.parseInt(offset) <= 0) updateAddressUpdatedAt(c, address);
+
+    // Build dynamic WHERE clause. `address` is always bound first for security
+    // (scoped to the authenticated user). Additional filters are appended with
+    // parameterized placeholders — never string interpolation.
+    // Note: raw_mails has no `subject` column; subject lives inside the `raw`
+    // email body, so we match against `raw` using instr() (same approach as
+    // admin_api/address_api.ts for long patterns, avoiding D1 LIKE limits).
+    const conditions: string[] = ['address = ?'];
+    const params: string[] = [address];
+    if (subject) {
+        conditions.push('instr(raw, ?) > 0');
+        params.push(subject);
+    }
+    if (source) {
+        conditions.push('source = ?');
+        params.push(source);
+    }
+    if (date_from) {
+        conditions.push('created_at >= ?');
+        params.push(date_from);
+    }
+    if (date_to) {
+        conditions.push('created_at <= ?');
+        params.push(date_to);
+    }
+    const whereClause = conditions.join(' and ');
     return await handleMailListQuery(c,
-        `SELECT * FROM raw_mails where address = ?`,
-        `SELECT count(*) as count FROM raw_mails where address = ?`,
-        [address], limit, offset
+        `SELECT * FROM raw_mails where ${whereClause}`,
+        `SELECT count(*) as count FROM raw_mails where ${whereClause}`,
+        params, limit, offset
     );
 };
 

@@ -1,202 +1,289 @@
-<!-- markdownlint-disable-file MD033 MD045 -->
-# Cloudflare 临时邮箱 - 免费搭建临时邮件服务
+# 📧 Cloudflare SuperMail
 
-<p align="center">
-  <a href="https://temp-mail-docs.awsl.uk" target="_blank">
-    <img alt="docs" src="https://img.shields.io/badge/docs-grey?logo=vitepress">
-  </a>
-  <a href="https://github.com/dreamhunter2333/cloudflare_temp_email/releases/latest" target="_blank">
-    <img src="https://img.shields.io/github/v/release/dreamhunter2333/cloudflare_temp_email">
-  </a>
-  <a href="https://github.com/dreamhunter2333/cloudflare_temp_email/blob/main/LICENSE" target="_blank">
-    <img alt="MIT License" src="https://img.shields.io/github/license/dreamhunter2333/cloudflare_temp_email">
-  </a>
-  <a href="https://github.com/dreamhunter2333/cloudflare_temp_email/graphs/contributors" target="_blank">
-   <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/dreamhunter2333/cloudflare_temp_email">
-  </a>
-  <a href="">
-    <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/dreamhunter2333/cloudflare_temp_email">
-  </a>
-  <a href="">
-    <img src="https://img.shields.io/github/last-commit/dreamhunter2333/cloudflare_temp_email">
-  </a>
-</p>
+<div align="center">
 
-<p align="center">
-  <a href="https://hellogithub.com/repository/2ccc64bb1ba346b480625f584aa19eb1" target="_blank">
-    <img src="https://abroad.hellogithub.com/v1/widgets/recommend.svg?rid=2ccc64bb1ba346b480625f584aa19eb1&claim_uid=FxNypXK7UQ9OECT" alt="Featured｜HelloGitHub" height="30"/>
-  </a>
-</p>
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F48120?style=for-the-badge&logo=cloudflare&logoColor=white)
+![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge)
 
-<p align="center">
-  <a href="README.md">中文文档</a> |
-  <a href="README_EN.md">English Document</a>
-</p>
+**Full-featured temporary email service powered by Cloudflare Workers**
 
-> 本项目仅供学习和个人用途，请勿将其用于任何违法行为，否则后果自负。
+*Receive emails • Send emails • OAuth2 • Passkey • S3 attachments • Telegram bot • Multi-language*
 
-**一个功能完整的临时邮箱服务！**
+[Features](#-features) • [Quick Start](#-quick-start) • [Deployment](#-deployment) • [Configuration](#-configuration) • [API Reference](#-api-reference)
 
-- **完全免费** - 基于 Cloudflare 免费服务构建，零成本运行
-- **高性能** - Rust WASM 邮件解析，响应速度极快
-- **现代化界面** - 响应式设计，支持多语言，操作简便
-- **地址密码** - 支持为邮箱地址设置独立密码，增强安全性
-- **Agent 友好** - 内置邮箱 [`skill`](skills/cf-temp-mail-agent-mail/SKILL.md)，方便 AI agent 使用邮箱
-- **移动端管理** - 社区客户端 [CloudMail](https://github.com/Lur1N77777/CloudMail)，支持 Android 管理后台和邮箱管理
+</div>
 
-## 部署文档 - 快速开始
+---
 
-[部署文档](https://temp-mail-docs.awsl.uk) | [Github Action 部署文档](https://temp-mail-docs.awsl.uk/zh/guide/actions/github-action.html)
+## ✨ Features
 
-<a href="https://temp-mail-docs.awsl.uk/zh/guide/actions/github-action.html">
-  <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare Workers" height="32">
-</a>
+### 🔐 Authentication & Security
+- **User Login System** - Email/password registration and login
+- **OAuth2 Support** - Google, GitHub, Discord, and custom OAuth2 providers
+- **Passkey (WebAuthn)** - Passwordless authentication with hardware keys
+- **Address Password** - Optional password protection for email addresses
+- **JWT Tokens** - Secure API authentication
 
-## 更新日志
+### 📬 Email Management
+- **Receive Emails** - Unlimited disposable email addresses
+- **Send Emails** - Multiple backends (Cloudflare Email, Resend, SMTP)
+- **Auto Reply** - Configurable auto-reply rules
+- **Search & Filter** - Server-side search by subject, sender, date range
+- **Export Emails** - Export to JSON, CSV, or EML format
+- **Auto-Refresh** - Real-time inbox updates with configurable intervals
 
-查看 [CHANGELOG](CHANGELOG.md) 了解最新更新内容。
+### 📎 Attachments
+- **S3 Storage** - Receive and store attachments via S3-compatible storage
+- **Presigned URLs** - Secure direct upload/download
+- **Multiple Providers** - AWS S3, R2, MinIO, and more
 
-## 在线体验
+### 🤖 Integrations
+- **Telegram Bot** - Receive and manage emails via Telegram
+- **Webhook Support** - Forward emails to external services
+- **SMTP/IMAP Proxy** - Access via standard email clients
 
-立即体验 → [https://mail.awsl.uk/](https://mail.awsl.uk/)
+### 🌐 User Experience
+- **Responsive Design** - Works on desktop and mobile
+- **Dark/Light Theme** - Automatic or manual theme switching
+- **Multi-language** - English, Chinese, Japanese, German, Spanish, Portuguese
+- **Bulk Operations** - Select and download/delete multiple emails
 
-<details>
-<summary>服务状态监控（点击收缩/展开）</summary>
+### 👨‍💼 Admin Panel
+- **User Management** - View and manage all users
+- **Address Management** - Create, edit, delete addresses
+- **Statistics Dashboard** - Email counts, user activity
+- **System Settings** - Configure domains, features, limits
 
-|                                            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [Backend](https://temp-email-api.awsl.uk/) | [![Deploy Backend Production](https://github.com/dreamhunter2333/cloudflare_temp_email/actions/workflows/backend_deploy.yaml/badge.svg)](https://github.com/dreamhunter2333/cloudflare_temp_email/actions/workflows/backend_deploy.yaml) ![](https://uptime.aks.awsl.icu/api/badge/10/status) ![](https://uptime.aks.awsl.icu/api/badge/10/uptime) ![](https://uptime.aks.awsl.icu/api/badge/10/ping) ![](https://uptime.aks.awsl.icu/api/badge/10/avg-response) ![](https://uptime.aks.awsl.icu/api/badge/10/cert-exp) ![](https://uptime.aks.awsl.icu/api/badge/10/response) |
-| [Frontend](https://mail.awsl.uk/)          | [![Deploy Frontend](https://github.com/dreamhunter2333/cloudflare_temp_email/actions/workflows/frontend_deploy.yaml/badge.svg)](https://github.com/dreamhunter2333/cloudflare_temp_email/actions/workflows/frontend_deploy.yaml) ![](https://uptime.aks.awsl.icu/api/badge/12/status) ![](https://uptime.aks.awsl.icu/api/badge/12/uptime) ![](https://uptime.aks.awsl.icu/api/badge/12/ping) ![](https://uptime.aks.awsl.icu/api/badge/12/avg-response) ![](https://uptime.aks.awsl.icu/api/badge/12/cert-exp) ![](https://uptime.aks.awsl.icu/api/badge/12/response)         |
+---
 
-</details>
+## 🚀 Quick Start
 
-<details>
-<summary>Star History（点击收缩/展开）</summary>
+### Prerequisites
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=dreamhunter2333/cloudflare_temp_email&type=Date&theme=dark" />
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=dreamhunter2333/cloudflare_temp_email&type=Date" />
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=dreamhunter2333/cloudflare_temp_email&type=Date" />
-</picture>
+- [Node.js](https://nodejs.org/) 18+
+- [Cloudflare Account](https://dash.cloudflare.com/sign-up)
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
 
-</details>
+### 1. Clone the Repository
 
-<details open>
-<summary>目录（点击收缩/展开）</summary>
-
-- [Cloudflare 临时邮箱 - 免费搭建临时邮件服务](#cloudflare-临时邮箱---免费搭建临时邮件服务)
-  - [部署文档 - 快速开始](#部署文档---快速开始)
-  - [更新日志](#更新日志)
-  - [在线体验](#在线体验)
-  - [核心功能](#核心功能)
-    - [邮件处理](#邮件处理)
-    - [用户管理](#用户管理)
-    - [管理功能](#管理功能)
-    - [多语言与界面](#多语言与界面)
-    - [集成与扩展](#集成与扩展)
-  - [技术架构](#技术架构)
-    - [系统架构](#系统架构)
-    - [技术栈](#技术栈)
-    - [主要组件](#主要组件)
-  - [加入社区](#加入社区)
-
-</details>
-
-## 核心功能
-
-<details open>
-<summary>核心功能详情（点击收缩/展开）</summary>
-
-### 邮件处理
-
-- [x] 使用 `rust wasm` 解析邮件，解析速度快，几乎所有邮件都能解析，node 的解析模块解析邮件失败的邮件，rust wasm 也能解析成功
-- [x] **AI 邮件识别** - 使用 Cloudflare Workers AI 自动提取邮件中的验证码、认证链接、服务链接等重要信息
-- [x] 支持为指定基础域名创建随机二级域名邮箱地址，更适合收件隔离场景
-- [x] 支持发送邮件，支持 `DKIM` 验证
-- [x] 支持 `SMTP` 和 `Resend` 等多种发送方式 
-- [x] 增加查看 `附件` 功能，支持附件图片显示
-- [x] 支持 S3 附件存储和删除功能
-- [x] 垃圾邮件检测和黑白名单配置
-- [x] 邮件转发功能，支持全局转发地址
-
-### 用户管理
-
-- [x] 使用 `凭证` 重新登录之前的邮箱
-- [x] 添加完整的用户注册登录功能，可绑定邮箱地址，绑定后可自动获取邮箱JWT凭证切换不同邮箱
-- [x] 支持 `OAuth2` 第三方登录（Github、Authentik 等）
-- [x] 支持 `Passkey` 无密码登录
-- [x] 用户角色管理，支持多角色域名和前缀配置
-- [x] 用户收件箱查看，支持地址和关键词过滤
-
-### 管理功能
-
-- [x] 完整的 admin 控制台
-- [x] `admin` 后台创建无前缀邮箱
-- [x] admin 用户管理页面，增加用户地址查看功能
-- [x] 定时清理功能，支持多种清理策略
-- [x] 获取自定义名字的邮箱，`admin` 可配置黑名单
-- [x] 增加访问密码，可作为私人站点
-
-### 多语言与界面
-
-- [x] 前后台均支持多语言
-- [x] 现代化 UI 设计，支持响应式布局
-- [x] 支持 Google Ads 集成
-- [x] 使用 shadow DOM 防止样式污染
-- [x] 支持 URL JWT 参数自动登录
-
-### 集成与扩展
-
-- [x] 完整的 `Telegram Bot` 支持，以及 `Telegram` 推送，Telegram Bot 小程序
-- [x] 添加 `SMTP proxy server`，支持 `SMTP` 发送邮件，`IMAP` 查看邮件
-- [x] Webhook 支持，消息推送集成
-- [x] 支持 `CF Turnstile` 人机验证
-- [x] 限流配置，防止滥用
-- [x] **Agent 友好**：内置 [`cf-temp-mail-agent-mail`](skills/cf-temp-mail-agent-mail/SKILL.md) skill，AI agent 可直接消费邮箱，详见 [文档](vitepress-docs/docs/zh/guide/feature/agent-email.md)
-- [x] 社区移动端管理客户端：[CloudMail](https://github.com/Lur1N77777/CloudMail) 基于 Expo / React Native，面向本项目兼容 API，提供 Android 管理员后台、地址管理、收件/发件/未知邮件、验证码快捷复制、OLED 黑主题和本地分组。
-
-</details>
-
-## 技术架构
-
-<details>
-<summary>技术架构详情（点击收缩/展开）</summary>
-
-### 系统架构
-
-- **数据库**: Cloudflare D1 作为主数据库
-- **前端部署**: 使用 Cloudflare Pages 部署前端
-- **后端部署**: 使用 Cloudflare Workers 部署后端
-- **邮件转发**: 使用 Cloudflare Email Routing
-
-### 技术栈
-
-- **前端**: Vue 3 + Vite + TypeScript
-- **后端**: TypeScript + Cloudflare Workers
-- **邮件解析**: Rust WASM (mail-parser-wasm)
-- **数据库**: Cloudflare D1 (SQLite)
-- **存储**: Cloudflare KV + R2 (可选 S3)
-- **代理服务**: Python SMTP/IMAP Proxy Server
-
-### 主要组件
-
-- **Worker**: 核心后端服务
-- **Frontend**: Vue 3 用户界面
-- **Mail Parser WASM**: Rust 邮件解析模块
-- **SMTP Proxy Server**: Python 邮件代理服务
-- **Pages Functions**: Cloudflare Pages 中间件
-- **Documentation**: VitePress 文档站点
-
-</details>
-
-### 提醒
-
-- 在Resend添加域名记录时，如果您域名解析服务商正在托管您的3级域名a.b.com，请删除Resend生成的默认name中二级域名前缀b，否则将会添加a.b.b.com，导致验证失败。添加记录后，可通过
 ```bash
-nslookup -qt="mx" a.b.com 1.1.1.1
+git clone https://github.com/michaelxer/cloudflare_supermail.git
+cd cloudflare_supermail
 ```
-进行验证。 
 
-## 加入社区
+### 2. Install Dependencies
 
-- [Telegram](https://t.me/cloudflare_temp_email)
+```bash
+# Install worker dependencies
+cd worker
+npm install
+
+# Install frontend dependencies
+cd ../frontend
+npm install
+```
+
+### 3. Configure Environment
+
+```bash
+# Copy example config
+cp wrangler.toml.template wrangler.toml
+
+# Edit wrangler.toml with your settings
+# - CLOUDFLARE_ACCOUNT_ID
+# - CLOUDFLARE_API_TOKEN
+# - JWT_SECRET
+# - S3 credentials (optional)
+```
+
+### 4. Deploy
+
+```bash
+# Deploy worker
+cd worker
+npm run deploy
+
+# Build and deploy frontend
+cd ../frontend
+npm run build
+# Deploy to Cloudflare Pages or your preferred hosting
+```
+
+---
+
+## 🛠️ Deployment
+
+### Worker Deployment
+
+1. **Create D1 Database**
+   ```bash
+   wrangler d1 create supermail-db
+   ```
+
+2. **Update wrangler.toml** with your database ID
+
+3. **Run Database Migrations**
+   ```bash
+   wrangler d1 migrations apply supermail-db
+   ```
+
+4. **Deploy Worker**
+   ```bash
+   npm run deploy
+   ```
+
+### Frontend Deployment
+
+**Option A: Cloudflare Pages**
+```bash
+cd frontend
+npm run build
+wrangler pages deploy dist
+```
+
+**Option B: Vercel/Netlify**
+```bash
+cd frontend
+npm run build
+# Upload dist/ folder to your hosting provider
+```
+
+---
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `JWT_SECRET` | Secret key for JWT tokens | Yes |
+| `S3_BUCKET` | S3 bucket for attachments | No |
+| `S3_REGION` | S3 region | No |
+| `S3_ACCESS_KEY_ID` | S3 access key | No |
+| `S3_SECRET_ACCESS_KEY` | S3 secret key | No |
+| `RESEND_API_KEY` | Resend API key for sending | No |
+| `SMTP_HOST` | SMTP server host | No |
+| `SMTP_PORT` | SMTP server port | No |
+| `SMTP_USER` | SMTP username | No |
+| `SMTP_PASS` | SMTP password | No |
+
+### Feature Flags
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `ENABLE_USER_CREATE_EMAIL` | Allow users to create addresses | `true` |
+| `ENABLE_USER_DELETE_EMAIL` | Allow users to delete emails | `true` |
+| `ENABLE_AUTO_REPLY` | Enable auto-reply feature | `false` |
+| `ENABLE_ATTACHMENT` | Enable S3 attachments | `false` |
+| `ENABLE_WEBHOOK` | Enable webhook support | `false` |
+| `ENABLE_ADDRESS_PASSWORD` | Require password for addresses | `false` |
+
+---
+
+## 📡 API Reference
+
+### Authentication
+
+```http
+POST /api/address_login
+Content-Type: application/json
+
+{
+  "address": "user@example.com",
+  "password": "optional-password"
+}
+```
+
+### List Emails
+
+```http
+GET /api/mails?limit=20&offset=0&subject=search&source=sender@example.com&date_from=2024-01-01&date_to=2024-12-31
+Authorization: Bearer <token>
+```
+
+### Export Emails
+
+```http
+GET /api/export?format=json&limit=100&offset=0
+Authorization: Bearer <token>
+```
+
+**Formats:** `json`, `csv`, `eml`
+
+### Send Email
+
+```http
+POST /api/send_mail
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "from": "sender@example.com",
+  "to": ["recipient@example.com"],
+  "subject": "Hello",
+  "text": "Plain text body",
+  "html": "<p>HTML body</p>"
+}
+```
+
+---
+
+## 📁 Project Structure
+
+```
+cloudflare_supermail/
+├── worker/                    # Cloudflare Worker backend
+│   ├── src/
+│   │   ├── mails_api/        # Email API endpoints
+│   │   ├── user_api/         # User management API
+│   │   ├── admin_api/        # Admin panel API
+│   │   ├── common.ts         # Shared utilities
+│   │   └── index.ts          # Main entry point
+│   └── wrangler.toml.template
+├── frontend/                  # Vue.js frontend
+│   ├── src/
+│   │   ├── components/       # Vue components
+│   │   ├── views/            # Page views
+│   │   ├── api/              # API client
+│   │   └── i18n/             # Translations
+│   └── package.json
+└── README.md
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [Cloudflare Workers](https://workers.cloudflare.com/) - Serverless execution environment
+- [Vue.js](https://vuejs.org/) - Progressive JavaScript framework
+- [Naive UI](https://www.naiveui.com/) - Vue 3 component library
+- [Hono](https://hono.dev/) - Ultrafast web framework for the Edge
+
+---
+
+<div align="center">
+
+**[⬆ Back to Top](#-cloudflare-supermail)**
+
+</div>

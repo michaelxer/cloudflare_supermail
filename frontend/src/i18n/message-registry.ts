@@ -125,6 +125,46 @@ export const MESSAGE_REGISTRY = {
     "unselectAll": {
       "en": "Unselect All",
       "zh": "取消全选"
+    },
+    "search": {
+      "en": "Search",
+      "zh": "搜索"
+    },
+    "export": {
+      "en": "Export",
+      "zh": "导出"
+    },
+    "exportMails": {
+      "en": "Export Emails",
+      "zh": "导出邮件"
+    },
+    "subject": {
+      "en": "Subject",
+      "zh": "主题"
+    },
+    "sender": {
+      "en": "Sender",
+      "zh": "发件人"
+    },
+    "dateFrom": {
+      "en": "From",
+      "zh": "开始日期"
+    },
+    "dateTo": {
+      "en": "To",
+      "zh": "结束日期"
+    },
+    "searchBySubject": {
+      "en": "Search by subject",
+      "zh": "按主题搜索"
+    },
+    "searchBySender": {
+      "en": "Search by sender",
+      "zh": "按发件人搜索"
+    },
+    "clear": {
+      "en": "Clear",
+      "zh": "清除"
     }
   },
   "components.AiExtractInfo": {

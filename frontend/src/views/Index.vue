@@ -32,13 +32,14 @@ const SendMail = defineAsyncComponent(() => {
 
 const { t } = useScopedI18n('views.Index')
 
-const fetchMailData = async (limit, offset) => {
+const fetchMailData = async (limit, offset, searchQuery = '') => {
   if (mailIdQuery.value > 0) {
     const singleMail = await api.fetch(`/api/mail/${mailIdQuery.value}`);
     if (singleMail) return { results: [singleMail], count: 1 };
     return { results: [], count: 0 };
   }
-  return await api.fetch(`/api/mails?limit=${limit}&offset=${offset}`);
+  const searchParams = searchQuery ? `&${searchQuery}` : '';
+  return await api.fetch(`/api/mails?limit=${limit}&offset=${offset}${searchParams}`);
 };
 
 const deleteMail = async (curMailId) => {
