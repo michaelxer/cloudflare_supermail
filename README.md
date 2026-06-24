@@ -8,49 +8,69 @@
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge)
 
-**Full-featured temporary email service powered by Cloudflare Workers**
+**More than just temporary email — your complete privacy-first mail solution**
 
-*Receive emails • Send emails • Telegram notifications • Bulk management • Export • Search*
+*Send & receive emails • Telegram notifications • Bulk management • Attachments • Export • Search • Multi-language*
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Deployment](#-deployment) • [Configuration](#-configuration) • [API Reference](#-api-reference)
+[Features](#-features) • [Quick Start](#-quick-start) • [Why SuperMail?](#-why-supermail) • [Deployment](#-deployment) • [Configuration](#-configuration)
 
 </div>
 
 ---
 
+## 🌟 Why SuperMail?
+
+**SuperMail** isn't just another temp email service. It's a **full-featured email platform** built for:
+
+- 🔐 **Privacy-conscious users** who need disposable addresses
+- 👨‍💼 **Teams** managing multiple email accounts
+- 🤖 **Developers** integrating email into workflows
+- 📱 **Power users** who want Telegram notifications
+- 💼 **Businesses** needing bulk email operations
+
+**What makes it "Super":**
+- ✉️ **Send emails** — not just receive
+- 📎 **Attachments** — receive and store files
+- 📤 **Export** — backup your emails anytime
+- 🔍 **Search** — find any email instantly
+- 🤖 **Telegram** — real-time notifications
+- 📦 **Bulk ops** — create 100s of addresses at once
+
+---
+
 ## ✨ Features
 
-### 📬 Email Management
-- **Unlimited Disposable Addresses** - Create as many temp email addresses as you need
-- **Send Emails** - Reply to received emails or compose new ones from your temp addresses
-- **Receive Attachments** - View and download email attachments
-- **Export Emails** - Download as EML, CSV, or JSON for backup
-- **Search & Filter** - Find emails by sender, subject, or date range
-- **Auto-Refresh** - Inbox updates automatically every 5-10 seconds
+### 📬 Complete Email Solution
+- **Send & Receive** — Full bidirectional email support
+- **Unlimited Addresses** — Create as many disposable addresses as you need
+- **Attachments** — Receive and download files (S3/R2 storage)
+- **Export** — Download emails as EML, CSV, or JSON
+- **Search & Filter** — Find emails by sender, subject, or date
+- **Auto-Refresh** — Inbox updates automatically
 
-### 🤖 Telegram Integration
-- **Telegram Bot** - Receive email notifications via Telegram (@savelokalbot)
-- **Global Mail Push** - Get notified for ALL incoming emails
-- **Bulk Bind** - Bind multiple addresses to Telegram at once
-- **Mobile Friendly** - Read emails directly in Telegram
+### 🤖 Smart Integrations
+- **Telegram Bot** — Get instant notifications for new emails
+- **Global Push** — Notify for ALL incoming emails, not just bound ones
+- **Bulk Bind** — Connect multiple addresses to Telegram at once
+- **Webhook Support** — Forward emails to external services
 
-### 👨‍💼 Admin Panel
-- **Bulk Create Accounts** - Generate multiple addresses with fake names
-- **Bulk Management** - Select and manage multiple addresses at once
-- **Statistics Dashboard** - View total addresses, emails, and activity
-- **One-Click Copy** - Copy emails, JWTs, or both in batch
+### 👨‍💼 Admin Power Tools
+- **Bulk Create** — Generate 100s of addresses with fake names
+- **Batch Management** — Select and manage multiple addresses
+- **Statistics** — View email counts and activity
+- **One-Click Copy** — Copy emails, JWTs, or both in batch
 
-### 🌐 User Experience
-- **Responsive Design** - Works perfectly on desktop and mobile
-- **Dark Mode** - Easy on the eyes (default theme)
-- **Multi-language** - English, Chinese, Japanese, German, Spanish, Portuguese
-- **No Registration** - Start using immediately, no signup required
+### 🌐 Modern Experience
+- **Responsive** — Works on desktop, tablet, and mobile
+- **Dark Mode** — Easy on the eyes (default theme)
+- **Multi-language** — 6 languages supported
+- **No Signup** — Start using immediately
 
-### 🔐 Security & Privacy
-- **JWT Authentication** - Secure API access with tokens
-- **Admin Password** - Protected admin panel
-- **Address Passwords** - Optional password protection for addresses
-- **No Tracking** - Your privacy is respected
+### 🔒 Enterprise-Grade Security
+- **JWT Auth** — Secure API authentication
+- **Admin Protection** — Password-protected admin panel
+- **Address Passwords** — Optional per-address security
+- **No Tracking** — Your privacy is our priority
 
 ---
 
@@ -68,59 +88,37 @@
 - [Cloudflare Account](https://dash.cloudflare.com/sign-up) (free plan works)
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
 
-#### 1. Clone the Repository
+#### 1. Clone & Install
 
 ```bash
 git clone https://github.com/michaelxer/cloudflare_supermail.git
 cd cloudflare_supermail
-```
 
-#### 2. Install Dependencies
-
-```bash
 # Install worker dependencies
-cd worker
-npm install
+cd worker && npm install
 
 # Install frontend dependencies
-cd ../frontend
-npm install
+cd ../frontend && npm install
 ```
 
-#### 3. Configure Environment
+#### 2. Configure & Deploy
 
 ```bash
-# Copy example config
-cd worker
+# Copy and edit config
+cd ../worker
 cp wrangler.toml.template wrangler.toml
+# Edit wrangler.toml with your settings
 
-# Edit wrangler.toml with your settings:
-# - JWT_SECRET (any random string)
-# - ADMIN_PASSWORDS (your admin password)
-# - DEFAULT_DOMAINS (your domain)
-# - DOMAINS (your domain)
-```
-
-#### 4. Deploy
-
-```bash
-# Create D1 database
+# Create resources
 npx wrangler d1 create supermail-db
-# Copy the database_id to wrangler.toml
-
-# Create KV namespace
 npx wrangler kv namespace create KV
-# Copy the id to wrangler.toml
-
-# Set Telegram bot token (optional)
-echo "YOUR_BOT_TOKEN" | npx wrangler secret put TELEGRAM_BOT_TOKEN
 
 # Deploy worker
 npx wrangler deploy
 
-# Build and deploy frontend
+# Deploy frontend
 cd ../frontend
-echo "VITE_API_BASE=https://your-worker.your-domain.com" > .env
+echo "VITE_API_BASE=https://your-worker-url" > .env
 npm run build
 npx wrangler pages deploy dist --project-name=supermail --branch=production
 ```
@@ -129,49 +127,7 @@ npx wrangler pages deploy dist --project-name=supermail --branch=production
 
 ## 🛠️ Deployment
 
-### Detailed Deployment Guide
-
-1. **Create Cloudflare Resources**
-   ```bash
-   # Create D1 database
-   npx wrangler d1 create supermail-db
-   # Note the database_id from output
-   
-   # Create KV namespace
-   npx wrangler kv namespace create KV
-   # Note the id from output
-   ```
-
-2. **Update wrangler.toml**
-   - Set `database_id` from step 1
-   - Set `id` from step 1
-   - Set `JWT_SECRET` to any random string
-   - Set `ADMIN_PASSWORDS` to your desired password
-   - Set `DEFAULT_DOMAINS` and `DOMAINS` to your domain
-
-3. **Set Secrets**
-   ```bash
-   # Telegram bot token (optional)
-   echo "YOUR_BOT_TOKEN" | npx wrangler secret put TELEGRAM_BOT_TOKEN
-   ```
-
-4. **Deploy Worker**
-   ```bash
-   cd worker
-   npx wrangler deploy
-   ```
-
-5. **Configure Frontend**
-   ```bash
-   cd frontend
-   echo "VITE_API_BASE=https://your-worker-url" > .env
-   npm run build
-   ```
-
-6. **Deploy Frontend**
-   ```bash
-   npx wrangler pages deploy dist --project-name=supermail --branch=production
-   ```
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
 
 ---
 
@@ -187,9 +143,8 @@ npx wrangler pages deploy dist --project-name=supermail --branch=production
 | `DOMAINS` | All available domains | `["yourdomain.com"]` |
 | `PREFIX` | Email address prefix | `tmp` |
 | `TITLE` | Site title | `Cloudflare SuperMail` |
-| `COPYRIGHT` | Footer copyright text | `Your Name` |
+| `COPYRIGHT` | Footer copyright | `Your Name` |
 | `DEFAULT_LANG` | Default language | `en` |
-| `TG_MAX_ADDRESS` | Max Telegram addresses | `9999` |
 
 ### Feature Flags
 
@@ -206,48 +161,31 @@ npx wrangler pages deploy dist --project-name=supermail --branch=production
 ## 📡 API Reference
 
 ### Authentication
-
 ```http
 POST /api/address_login
 Content-Type: application/json
-
-{
-  "address": "user@yourdomain.com",
-  "password": "optional-password"
-}
+{ "address": "user@yourdomain.com", "password": "optional" }
 ```
 
 ### List Emails
-
 ```http
-GET /api/mails?limit=20&offset=0&subject=search&source=sender@example.com
+GET /api/mails?limit=20&offset=0&subject=search
 Authorization: Bearer <token>
 ```
 
 ### Send Email
-
 ```http
 POST /api/send_mail
 Authorization: Bearer <token>
 Content-Type: application/json
-
-{
-  "from": "sender@yourdomain.com",
-  "to": ["recipient@example.com"],
-  "subject": "Hello",
-  "text": "Plain text body",
-  "html": "<p>HTML body</p>"
-}
+{ "from": "sender@yourdomain.com", "to": ["recipient@example.com"], "subject": "Hello", "text": "Body" }
 ```
 
 ### Export Emails
-
 ```http
-GET /api/export?format=json&limit=100&offset=0
+GET /api/export?format=json&limit=100
 Authorization: Bearer <token>
 ```
-
-**Formats:** `json`, `csv`, `eml`
 
 ---
 
@@ -308,7 +246,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 This project was built with inspiration from these excellent open-source projects:
 
-- **[cloudflare_temp_email](https://github.com/dreamhunter2333/cloudflare_temp_email)** by [dreamhunter2333](https://github.com/dreamhunter2333) - The original Cloudflare temp email implementation that served as the foundation
+- **[cloudflare_temp_email](https://github.com/dreamhunter2333/cloudflare_temp_email)** by [dreamhunter2333](https://github.com/dreamhunter2333) - The original Cloudflare temp email implementation
 - **[cloud-mail](https://github.com/maillab/cloud-mail)** by [maillab](https://github.com/maillab) - Additional features and architecture inspiration
 
 We've cherry-picked the best features from both projects and added our own improvements including bulk account management, fake name generation, enhanced Telegram integration, and more.
