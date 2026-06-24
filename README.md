@@ -10,7 +10,7 @@
 
 **Full-featured temporary email service powered by Cloudflare Workers**
 
-*Receive emails • Send emails • OAuth2 • Passkey • S3 attachments • Telegram bot • Multi-language*
+*Receive emails • Send emails • Telegram notifications • Bulk management • Export • Search*
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Deployment](#-deployment) • [Configuration](#-configuration) • [API Reference](#-api-reference)
 
@@ -20,61 +20,62 @@
 
 ## ✨ Features
 
-### 🔐 Authentication & Security
-- **User Login System** - Email/password registration and login
-- **OAuth2 Support** - Google, GitHub, Discord, and custom OAuth2 providers
-- **Passkey (WebAuthn)** - Passwordless authentication with hardware keys
-- **Address Password** - Optional password protection for email addresses
-- **JWT Tokens** - Secure API authentication
-
 ### 📬 Email Management
-- **Receive Emails** - Unlimited disposable email addresses
-- **Send Emails** - Multiple backends (Cloudflare Email, Resend, SMTP)
-- **Auto Reply** - Configurable auto-reply rules
-- **Search & Filter** - Server-side search by subject, sender, date range
-- **Export Emails** - Export to JSON, CSV, or EML format
-- **Auto-Refresh** - Real-time inbox updates with configurable intervals
+- **Unlimited Disposable Addresses** - Create as many temp email addresses as you need
+- **Send Emails** - Reply to received emails or compose new ones from your temp addresses
+- **Receive Attachments** - View and download email attachments
+- **Export Emails** - Download as EML, CSV, or JSON for backup
+- **Search & Filter** - Find emails by sender, subject, or date range
+- **Auto-Refresh** - Inbox updates automatically every 5-10 seconds
 
-### 📎 Attachments
-- **S3 Storage** - Receive and store attachments via S3-compatible storage
-- **Presigned URLs** - Secure direct upload/download
-- **Multiple Providers** - AWS S3, R2, MinIO, and more
-
-### 🤖 Integrations
-- **Telegram Bot** - Receive and manage emails via Telegram
-- **Webhook Support** - Forward emails to external services
-- **SMTP/IMAP Proxy** - Access via standard email clients
-
-### 🌐 User Experience
-- **Responsive Design** - Works on desktop and mobile
-- **Dark/Light Theme** - Automatic or manual theme switching
-- **Multi-language** - English, Chinese, Japanese, German, Spanish, Portuguese
-- **Bulk Operations** - Select and download/delete multiple emails
+### 🤖 Telegram Integration
+- **Telegram Bot** - Receive email notifications via Telegram (@savelokalbot)
+- **Global Mail Push** - Get notified for ALL incoming emails
+- **Bulk Bind** - Bind multiple addresses to Telegram at once
+- **Mobile Friendly** - Read emails directly in Telegram
 
 ### 👨‍💼 Admin Panel
-- **User Management** - View and manage all users
-- **Address Management** - Create, edit, delete addresses
-- **Statistics Dashboard** - Email counts, user activity
-- **System Settings** - Configure domains, features, limits
+- **Bulk Create Accounts** - Generate multiple addresses with fake names
+- **Bulk Management** - Select and manage multiple addresses at once
+- **Statistics Dashboard** - View total addresses, emails, and activity
+- **One-Click Copy** - Copy emails, JWTs, or both in batch
+
+### 🌐 User Experience
+- **Responsive Design** - Works perfectly on desktop and mobile
+- **Dark Mode** - Easy on the eyes (default theme)
+- **Multi-language** - English, Chinese, Japanese, German, Spanish, Portuguese
+- **No Registration** - Start using immediately, no signup required
+
+### 🔐 Security & Privacy
+- **JWT Authentication** - Secure API access with tokens
+- **Admin Password** - Protected admin panel
+- **Address Passwords** - Optional password protection for addresses
+- **No Tracking** - Your privacy is respected
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### For Non-Technical Users
+
+👉 **See [DEPLOYMENT.md](DEPLOYMENT.md) for a step-by-step guide with screenshots**
+
+### For Developers
+
+#### Prerequisites
 
 - [Node.js](https://nodejs.org/) 18+
-- [Cloudflare Account](https://dash.cloudflare.com/sign-up)
+- [Cloudflare Account](https://dash.cloudflare.com/sign-up) (free plan works)
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
 
-### 1. Clone the Repository
+#### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/michaelxer/cloudflare_supermail.git
 cd cloudflare_supermail
 ```
 
-### 2. Install Dependencies
+#### 2. Install Dependencies
 
 ```bash
 # Install worker dependencies
@@ -86,89 +87,109 @@ cd ../frontend
 npm install
 ```
 
-### 3. Configure Environment
+#### 3. Configure Environment
 
 ```bash
 # Copy example config
+cd worker
 cp wrangler.toml.template wrangler.toml
 
-# Edit wrangler.toml with your settings
-# - CLOUDFLARE_ACCOUNT_ID
-# - CLOUDFLARE_API_TOKEN
-# - JWT_SECRET
-# - S3 credentials (optional)
+# Edit wrangler.toml with your settings:
+# - JWT_SECRET (any random string)
+# - ADMIN_PASSWORDS (your admin password)
+# - DEFAULT_DOMAINS (your domain)
+# - DOMAINS (your domain)
 ```
 
-### 4. Deploy
+#### 4. Deploy
 
 ```bash
+# Create D1 database
+npx wrangler d1 create supermail-db
+# Copy the database_id to wrangler.toml
+
+# Create KV namespace
+npx wrangler kv namespace create KV
+# Copy the id to wrangler.toml
+
+# Set Telegram bot token (optional)
+echo "YOUR_BOT_TOKEN" | npx wrangler secret put TELEGRAM_BOT_TOKEN
+
 # Deploy worker
-cd worker
-npm run deploy
+npx wrangler deploy
 
 # Build and deploy frontend
 cd ../frontend
+echo "VITE_API_BASE=https://your-worker.your-domain.com" > .env
 npm run build
-# Deploy to Cloudflare Pages or your preferred hosting
+npx wrangler pages deploy dist --project-name=supermail --branch=production
 ```
 
 ---
 
 ## 🛠️ Deployment
 
-### Worker Deployment
+### Detailed Deployment Guide
 
-1. **Create D1 Database**
+1. **Create Cloudflare Resources**
    ```bash
-   wrangler d1 create supermail-db
+   # Create D1 database
+   npx wrangler d1 create supermail-db
+   # Note the database_id from output
+   
+   # Create KV namespace
+   npx wrangler kv namespace create KV
+   # Note the id from output
    ```
 
-2. **Update wrangler.toml** with your database ID
+2. **Update wrangler.toml**
+   - Set `database_id` from step 1
+   - Set `id` from step 1
+   - Set `JWT_SECRET` to any random string
+   - Set `ADMIN_PASSWORDS` to your desired password
+   - Set `DEFAULT_DOMAINS` and `DOMAINS` to your domain
 
-3. **Run Database Migrations**
+3. **Set Secrets**
    ```bash
-   wrangler d1 migrations apply supermail-db
+   # Telegram bot token (optional)
+   echo "YOUR_BOT_TOKEN" | npx wrangler secret put TELEGRAM_BOT_TOKEN
    ```
 
 4. **Deploy Worker**
    ```bash
-   npm run deploy
+   cd worker
+   npx wrangler deploy
    ```
 
-### Frontend Deployment
+5. **Configure Frontend**
+   ```bash
+   cd frontend
+   echo "VITE_API_BASE=https://your-worker-url" > .env
+   npm run build
+   ```
 
-**Option A: Cloudflare Pages**
-```bash
-cd frontend
-npm run build
-wrangler pages deploy dist
-```
-
-**Option B: Vercel/Netlify**
-```bash
-cd frontend
-npm run build
-# Upload dist/ folder to your hosting provider
-```
+6. **Deploy Frontend**
+   ```bash
+   npx wrangler pages deploy dist --project-name=supermail --branch=production
+   ```
 
 ---
 
 ## ⚙️ Configuration
 
-### Environment Variables
+### Worker Variables (wrangler.toml)
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `JWT_SECRET` | Secret key for JWT tokens | Yes |
-| `S3_BUCKET` | S3 bucket for attachments | No |
-| `S3_REGION` | S3 region | No |
-| `S3_ACCESS_KEY_ID` | S3 access key | No |
-| `S3_SECRET_ACCESS_KEY` | S3 secret key | No |
-| `RESEND_API_KEY` | Resend API key for sending | No |
-| `SMTP_HOST` | SMTP server host | No |
-| `SMTP_PORT` | SMTP server port | No |
-| `SMTP_USER` | SMTP username | No |
-| `SMTP_PASS` | SMTP password | No |
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `JWT_SECRET` | Secret for JWT tokens | `your-random-secret` |
+| `ADMIN_PASSWORDS` | Admin panel passwords | `["your-password"]` |
+| `DEFAULT_DOMAINS` | Default email domains | `["yourdomain.com"]` |
+| `DOMAINS` | All available domains | `["yourdomain.com"]` |
+| `PREFIX` | Email address prefix | `tmp` |
+| `TITLE` | Site title | `Cloudflare SuperMail` |
+| `COPYRIGHT` | Footer copyright text | `Your Name` |
+| `DEFAULT_LANG` | Default language | `en` |
+| `TG_MAX_ADDRESS` | Max Telegram addresses | `9999` |
 
 ### Feature Flags
 
@@ -177,9 +198,8 @@ npm run build
 | `ENABLE_USER_CREATE_EMAIL` | Allow users to create addresses | `true` |
 | `ENABLE_USER_DELETE_EMAIL` | Allow users to delete emails | `true` |
 | `ENABLE_AUTO_REPLY` | Enable auto-reply feature | `false` |
-| `ENABLE_ATTACHMENT` | Enable S3 attachments | `false` |
-| `ENABLE_WEBHOOK` | Enable webhook support | `false` |
-| `ENABLE_ADDRESS_PASSWORD` | Require password for addresses | `false` |
+| `ENABLE_TG_PUSH_ATTACHMENT` | Send attachments via Telegram | `true` |
+| `ENABLE_MAIL_GZIP` | Compress emails in database | `true` |
 
 ---
 
@@ -192,7 +212,7 @@ POST /api/address_login
 Content-Type: application/json
 
 {
-  "address": "user@example.com",
+  "address": "user@yourdomain.com",
   "password": "optional-password"
 }
 ```
@@ -200,8 +220,24 @@ Content-Type: application/json
 ### List Emails
 
 ```http
-GET /api/mails?limit=20&offset=0&subject=search&source=sender@example.com&date_from=2024-01-01&date_to=2024-12-31
+GET /api/mails?limit=20&offset=0&subject=search&source=sender@example.com
 Authorization: Bearer <token>
+```
+
+### Send Email
+
+```http
+POST /api/send_mail
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "from": "sender@yourdomain.com",
+  "to": ["recipient@example.com"],
+  "subject": "Hello",
+  "text": "Plain text body",
+  "html": "<p>HTML body</p>"
+}
 ```
 
 ### Export Emails
@@ -212,22 +248,6 @@ Authorization: Bearer <token>
 ```
 
 **Formats:** `json`, `csv`, `eml`
-
-### Send Email
-
-```http
-POST /api/send_mail
-Authorization: Bearer <token>
-Content-Type: application/json
-
-{
-  "from": "sender@example.com",
-  "to": ["recipient@example.com"],
-  "subject": "Hello",
-  "text": "Plain text body",
-  "html": "<p>HTML body</p>"
-}
-```
 
 ---
 
@@ -240,16 +260,18 @@ cloudflare_supermail/
 │   │   ├── mails_api/        # Email API endpoints
 │   │   ├── user_api/         # User management API
 │   │   ├── admin_api/        # Admin panel API
-│   │   ├── common.ts         # Shared utilities
-│   │   └── index.ts          # Main entry point
+│   │   ├── telegram_api/     # Telegram bot integration
+│   │   ├── email/            # Email processing
+│   │   └── i18n/             # Translations
 │   └── wrangler.toml.template
 ├── frontend/                  # Vue.js frontend
 │   ├── src/
-│   │   ├── components/       # Vue components
 │   │   ├── views/            # Page views
+│   │   ├── components/       # Vue components
 │   │   ├── api/              # API client
 │   │   └── i18n/             # Translations
 │   └── package.json
+├── DEPLOYMENT.md              # Non-technical deployment guide
 └── README.md
 ```
 
