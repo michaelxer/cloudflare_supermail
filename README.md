@@ -304,6 +304,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
+## ✨ Credits
+
+This project was built with inspiration from these excellent open-source projects:
+
+- **[cloudflare_temp_email](https://github.com/dreamhunter2333/cloudflare_temp_email)** by [dreamhunter2333](https://github.com/dreamhunter2333) - The original Cloudflare temp email implementation that served as the foundation
+- **[cloud-mail](https://github.com/maillab/cloud-mail)** by [maillab](https://github.com/maillab) - Additional features and architecture inspiration
+
+We've cherry-picked the best features from both projects and added our own improvements including bulk account management, fake name generation, enhanced Telegram integration, and more.
+
+---
+
 <div align="center">
 
 **[⬆ Back to Top](#-cloudflare-supermail)**
