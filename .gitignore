@@ -145,7 +145,6 @@ e2e/.e2e-pids
 
 # Secrets and credentials (NEVER commit these)
 .credentials/
-HANDOFF_DOC/
 private/
 *.secret
 *.key
