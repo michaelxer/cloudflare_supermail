@@ -20,11 +20,14 @@ api.get('/api/webhook/settings', webhook_settings.getWebhookSettings)
 api.post('/api/webhook/settings', webhook_settings.saveWebhookSettings)
 api.post('/api/webhook/test', webhook_settings.testWebhookSettings)
 
-// attachment (S3)
+// attachment (S3/R2)
 api.get('/api/attachment/list', s3_attachment.list)
 api.post('/api/attachment/delete', s3_attachment.deleteKey)
 api.post('/api/attachment/put_url', s3_attachment.getSignedPutUrl)
 api.post('/api/attachment/get_url', s3_attachment.getSignedGetUrl)
+// R2 proxy endpoints
+api.get('/api/attachment/download/:address/:key', s3_attachment.download)
+api.put('/api/attachment/upload/:address/:key', s3_attachment.upload)
 
 // mail crud
 api.get('/api/mails', mails_crud.listMails)

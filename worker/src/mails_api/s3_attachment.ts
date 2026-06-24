@@ -1,81 +1,45 @@
 import { Context } from "hono";
-import {
-    S3Client,
-    ListObjectsV2Command,
-    GetObjectCommand,
-    PutObjectCommand,
-    DeleteObjectCommand
-} from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 export const isS3Enabled = (c: Context<HonoCustomType>) => {
-    return !(!c.env.S3_ENDPOINT ||
-        !c.env.S3_ACCESS_KEY_ID ||
-        !c.env.S3_SECRET_ACCESS_KEY ||
-        !c.env.S3_BUCKET);
-}
-
-const getS3Client = (c: Context<HonoCustomType>) => {
-    if (
-        !c.env.S3_ENDPOINT ||
-        !c.env.S3_ACCESS_KEY_ID ||
-        !c.env.S3_SECRET_ACCESS_KEY ||
-        !c.env.S3_BUCKET
-    ) {
-        throw new Error("S3 config is not set");
-    }
-    return new S3Client({
-        region: "auto",
-        endpoint: c.env.S3_ENDPOINT,
-        credentials: {
-            accessKeyId: c.env.S3_ACCESS_KEY_ID,
-            secretAccessKey: c.env.S3_SECRET_ACCESS_KEY,
-        },
-    });
+    return !!c.env.S3_BUCKET;
 }
 
 export default {
     getSignedGetUrl: async (c: Context<HonoCustomType>) => {
         const { address } = c.get("jwtPayload")
         const { key } = await c.req.json()
-        const client = getS3Client(c);
-        const url = await getSignedUrl(
-            client,
-            new GetObjectCommand({
-                Bucket: c.env.S3_BUCKET,
-                Key: `${address}/${key}`
-            }),
-            { expiresIn: c.env.S3_URL_EXPIRES || 360 }
-        );
-        return c.json({ url });
+        const bucket = c.env.S3_BUCKET;
+        if (!bucket) {
+            throw new Error("R2 bucket not configured");
+        }
+        // For R2 bindings, we return a proxy URL through the worker
+        const url = new URL(c.req.url);
+        url.pathname = `/api/attachment/download/${address}/${key}`;
+        return c.json({ url: url.toString() });
     },
     getSignedPutUrl: async (c: Context<HonoCustomType>) => {
         const { address } = c.get("jwtPayload")
         const { key } = await c.req.json()
-        const client = getS3Client(c);
-        const url = await getSignedUrl(
-            client,
-            new PutObjectCommand({
-                Bucket: c.env.S3_BUCKET,
-                Key: `${address}/${key}`
-            }),
-            { expiresIn: c.env.S3_URL_EXPIRES || 360 }
-        );
-        return c.json({ url });
+        const bucket = c.env.S3_BUCKET;
+        if (!bucket) {
+            throw new Error("R2 bucket not configured");
+        }
+        // For R2 bindings, we return a proxy URL through the worker
+        const url = new URL(c.req.url);
+        url.pathname = `/api/attachment/upload/${address}/${key}`;
+        return c.json({ url: url.toString() });
     },
     list: async (c: Context<HonoCustomType>) => {
         const { address } = c.get("jwtPayload")
-        const client = getS3Client(c);
-        const data = await client.send(
-            new ListObjectsV2Command({
-                Bucket: c.env.S3_BUCKET,
-                Prefix: `${address}/`
-            })
-        );
+        const bucket = c.env.S3_BUCKET;
+        if (!bucket) {
+            throw new Error("R2 bucket not configured");
+        }
+        const objects = await bucket.list({ prefix: `${address}/` });
         return c.json(
             {
-                results: data?.Contents
-                    ?.map((v) => v.Key?.replace(`${address}/`, ""))
+                results: objects.objects
+                    ?.map((v) => v.key?.replace(`${address}/`, ""))
                     ?.filter(k => k)
                     ?.map((k) => ({ key: k }))
             }
@@ -84,13 +48,39 @@ export default {
     deleteKey: async (c: Context<HonoCustomType>) => {
         const { address } = c.get("jwtPayload")
         const { key } = await c.req.json()
-        const client = getS3Client(c);
-        await client.send(
-            new DeleteObjectCommand({
-                Bucket: c.env.S3_BUCKET,
-                Key: `${address}/${key}`
-            })
-        );
+        const bucket = c.env.S3_BUCKET;
+        if (!bucket) {
+            throw new Error("R2 bucket not configured");
+        }
+        await bucket.delete(`${address}/${key}`);
+        return c.json({ success: true });
+    },
+    // New endpoints for R2 proxy
+    download: async (c: Context<HonoCustomType>) => {
+        const address = c.req.param('address');
+        const key = c.req.param('key');
+        const bucket = c.env.S3_BUCKET;
+        if (!bucket) {
+            throw new Error("R2 bucket not configured");
+        }
+        const object = await bucket.get(`${address}/${key}`);
+        if (!object) {
+            return c.text('Not found', 404);
+        }
+        const headers = new Headers();
+        object.writeHttpMetadata(headers);
+        headers.set('etag', object.httpEtag);
+        return new Response(object.body, { headers });
+    },
+    upload: async (c: Context<HonoCustomType>) => {
+        const address = c.req.param('address');
+        const key = c.req.param('key');
+        const bucket = c.env.S3_BUCKET;
+        if (!bucket) {
+            throw new Error("R2 bucket not configured");
+        }
+        const body = await c.req.arrayBuffer();
+        await bucket.put(`${address}/${key}`, body);
         return c.json({ success: true });
     }
 }
