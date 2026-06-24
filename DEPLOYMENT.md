@@ -15,11 +15,12 @@
 
 ## 🎯 What You'll Get
 
-- Your own temporary email service (like `temp-mail.org` but yours!)
+- Your own email service (like Gmail, but private!)
 - Unlimited disposable email addresses
+- Send and receive emails
+- **Attachments support** (stored in R2)
 - Telegram notifications for new emails
 - Admin panel to manage everything
-- Send and receive emails
 - Export emails as backup
 
 ---
@@ -186,7 +187,32 @@
 
 ---
 
-## 🤖 Step 9: Setup Telegram Bot (Optional)
+## 📎 Step 9: Create R2 Storage for Attachments (Optional)
+
+**Skip this if you don't need attachment support**
+
+1. In **Command Prompt** or **Terminal** (make sure you're in the `worker` folder):
+   ```bash
+   wrangler r2 bucket create supermail-attachments
+   ```
+
+2. You'll see:
+   ```
+   ✅ Created bucket 'supermail-attachments'
+   ```
+
+3. Open `wrangler.toml` and add this at the end:
+   ```toml
+   [[r2_buckets]]
+   binding = "S3_BUCKET"
+   bucket_name = "supermail-attachments"
+   ```
+
+4. Save the file
+
+---
+
+## 🤖 Step 10: Setup Telegram Bot (Optional)
 
 **Skip this if you don't want Telegram notifications**
 
@@ -225,7 +251,7 @@
 
 ---
 
-## 🚀 Step 10: Deploy the Worker
+## 🚀 Step 11: Deploy the Worker
 
 1. In **Command Prompt** or **Terminal** (in the `worker` folder):
    ```bash
@@ -245,7 +271,7 @@
 
 ---
 
-## 🎨 Step 11: Deploy the Frontend
+## 🎨 Step 12: Deploy the Frontend
 
 1. Go to the `frontend` folder:
    ```bash
@@ -288,7 +314,7 @@
 
 ---
 
-## ✅ Step 12: Test Your Email Service
+## ✅ Step 13: Test Your Email Service
 
 1. Open your browser
 2. Go to your frontend URL (from Step 11)
@@ -313,6 +339,7 @@ You now have your own temporary email service!
 - ✅ Create unlimited email addresses
 - ✅ Receive emails instantly
 - ✅ Send emails from your temp addresses
+- ✅ **Send and receive attachments**
 - ✅ Get Telegram notifications
 - ✅ Export emails as backup
 - ✅ Search and filter emails
