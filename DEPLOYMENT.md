@@ -370,6 +370,77 @@ You now have your own temporary email service!
 
 ---
 
+## 💰 Keeping It FREE - Important Limits
+
+**Cloudflare's free tier is very generous, but there are limits.** Here's what to watch:
+
+### Free Tier Limits (You Get This For Free)
+
+| Service | Free Limit | What Happens If Exceeded |
+|---------|------------|--------------------------|
+| **Workers** | 100,000 requests/day | Requests paused until next day |
+| **D1 Database** | 5 GB storage | Writes blocked (reads still work) |
+| **KV Storage** | 1 GB storage | Writes blocked (reads still work) |
+| **R2 Storage** | 10 GB storage | Uploads blocked (downloads still work) |
+| **R2 Operations** | 1M writes + 10M reads/month | Operations paused next month |
+| **Pages** | 500 builds/month, 100 GB bandwidth | Builds paused next month |
+| **Email Sending** | 100 emails/day | Sending paused until next day |
+| **Email Routing** | Unlimited receiving | ✅ No limit on receiving! |
+
+### How to Stay Free
+
+1. **Monitor Your Usage**
+   - Go to Cloudflare Dashboard → **Analytics & Logs**
+   - Check Workers, D1, KV, and R2 usage weekly
+   - Set up email alerts (Dashboard → Notifications)
+
+2. **Optimize Worker Requests**
+   - Use caching where possible
+   - Avoid unnecessary API calls
+   - The free tier (100K/day) is plenty for personal use
+
+3. **Manage Storage Wisely**
+   - **Delete old emails** regularly (Admin → Cleanup)
+   - **Delete old attachments** (they use R2 storage)
+   - **Export and backup** important emails, then delete from cloud
+
+4. **Watch R2 Storage**
+   - 10 GB is enough for thousands of emails with attachments
+   - Delete attachments you don't need
+   - Check R2 usage in Dashboard → R2 → Overview
+
+5. **Email Sending Limits**
+   - 100 emails/day is the free limit
+   - For personal use, this is more than enough
+   - If you need more, consider using a free SMTP service like Resend
+
+### Warning Signs to Watch
+
+⚠️ **You'll get email alerts before hitting limits** - Cloudflare sends warnings at 75% and 90% usage.
+
+⚠️ **If you get paused:**
+- Wait until the next day/month for limits to reset
+- No charges - just temporary pause
+- Delete old data to free up space
+
+### Pro Tips for Staying Free
+
+1. **Use auto-cleanup** - Set up automatic deletion of old emails
+2. **Export regularly** - Download important emails as EML/CSV backups
+3. **Monitor attachment size** - Large attachments fill R2 fast
+4. **One domain is enough** - Multiple domains don't increase limits
+5. **Personal use = plenty** - Free tier handles 100+ users easily
+
+### What's Truly Unlimited (Free Forever)
+
+✅ **Email receiving** - No limit via Email Routing
+✅ **D1 reads** - 5 million reads/day (way more than you'll ever need)
+✅ **KV reads** - 100,000 reads/day
+✅ **R2 downloads** - 10 million reads/month
+✅ **Bandwidth** - No egress fees on R2 (unlike AWS S3!)
+
+---
+
 ## 📞 Need Help?
 
 - Open an issue on GitHub: [https://github.com/michaelxer/cloudflare_supermail/issues](https://github.com/michaelxer/cloudflare_supermail/issues)

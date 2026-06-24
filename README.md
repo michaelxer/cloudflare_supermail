@@ -74,6 +74,23 @@
 
 ---
 
+## 💰 100% Free to Run
+
+**SuperMail runs entirely on Cloudflare's free tier.** No credit card needed, no surprise charges.
+
+| Service | Free Limit |
+|---------|------------|
+| Workers | 100,000 requests/day |
+| D1 Database | 5 GB storage |
+| KV Storage | 1 GB |
+| R2 Storage | 10 GB (no egress fees!) |
+| Email Receiving | **Unlimited** |
+| Email Sending | 100/day |
+
+👉 **See [DEPLOYMENT.md](DEPLOYMENT.md#-keeping-it-free---important-limits) for tips on staying free**
+
+---
+
 ## 🚀 Quick Start
 
 ### For Non-Technical Users
