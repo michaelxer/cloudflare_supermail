@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, h } from 'vue';
+import { computed, onMounted, ref, h, watch } from 'vue';
 import { NInput, NSelect, NButton } from 'naive-ui';
 import { useGlobalState } from '../../store'
 import { api } from '../../api'
@@ -8,13 +8,12 @@ const { loading, openSettings } = useGlobalState()
 const message = useMessage()
 
 const enablePrefix = ref(false)
-const bulkCount = ref(5)
-const emailDomain = ref("")
-const bulkList = ref([]) // [{ name, domain }]
+const bulkRows = ref([{ domain: '', count: 5 }])
+const bulkList = ref([])
 const creatingProgress = ref(0)
 const creatingTotal = ref(0)
 const isCreating = ref(false)
-const createdResults = ref([]) // [{ address, jwt }]
+const createdResults = ref([])
 const showResults = ref(false)
 const generateNameLoading = ref(false)
 
@@ -27,9 +26,17 @@ const addressRegex = computed(() => {
     return /[^a-z0-9]/g;
 });
 
-const domainOptions = computed(() => openSettings.value.domains || [])
+const domainOptions = computed(() => openSettings.value?.domains || [])
 
-// Fetch existing addresses to avoid duplicates
+const addDomainRow = () => {
+    const firstDomain = domainOptions.value?.[0]?.value || ''
+    bulkRows.value.push({ domain: firstDomain, count: 5 })
+}
+
+const removeDomainRow = (index) => {
+    if (bulkRows.value.length > 1) bulkRows.value.splice(index, 1)
+}
+
 const fetchExistingNames = async () => {
     try {
         const { results } = await api.fetch(`/admin/address?limit=1000&offset=0`)
@@ -58,9 +65,9 @@ const generateFakeName = (faker, existingNames, usedNames) => {
 }
 
 const generateBulkNames = async () => {
-    const count = parseInt(bulkCount.value) || 1
-    if (count < 1 || count > 200) {
-        message.error('Please enter a number between 1 and 200')
+    const totalCount = bulkRows.value.reduce((sum, r) => sum + (parseInt(r.count) || 0), 0)
+    if (totalCount < 1 || totalCount > 500) {
+        message.error('Total count must be between 1 and 500')
         return
     }
     try {
@@ -68,12 +75,16 @@ const generateBulkNames = async () => {
         const { faker } = await import('https://esm.sh/@faker-js/faker')
         const existingNames = await fetchExistingNames()
         const usedNames = new Set()
-        const domain = emailDomain.value || domainOptions.value?.[0]?.value || ''
         const list = []
-        for (let i = 0; i < count; i++) {
-            const name = generateFakeName(faker, existingNames, usedNames)
-            usedNames.add(name)
-            list.push({ name, domain })
+        for (const row of bulkRows.value) {
+            const domain = row.domain || domainOptions.value?.[0]?.value || ''
+            if (!domain) continue
+            const count = parseInt(row.count) || 1
+            for (let i = 0; i < count; i++) {
+                const name = generateFakeName(faker, existingNames, usedNames)
+                usedNames.add(name)
+                list.push({ name, domain })
+            }
         }
         bulkList.value = list
     } catch (error) {
@@ -197,34 +208,75 @@ const resultColumns = [
 ]
 
 onMounted(async () => {
-    emailDomain.value = domainOptions.value?.[0]?.value || ''
+    // Wait for settings to load
+    let attempts = 0
+    while (attempts < 10 && domainOptions.value.length === 0) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+        attempts++
+    }
+    if (domainOptions.value?.[0]?.value) {
+        bulkRows.value[0].domain = domainOptions.value[0].value
+    }
+})
+
+// Watch for domain options changes
+watch(domainOptions, (newOptions) => {
+    if (newOptions.length > 0 && !bulkRows.value[0].domain) {
+        bulkRows.value[0].domain = newOptions[0].value
+    }
 })
 </script>
 
 <template>
     <div class="bulk-create">
         <n-card :bordered="false" embedded>
-            <!-- Controls row -->
-            <n-space align="center" style="margin-bottom: 12px; flex-wrap: wrap;">
-                <n-form-item-row v-if="openSettings.prefix" label="If enable Prefix" style="margin-bottom: 0;">
-                    <n-switch v-model:value="enablePrefix" :round="false" />
-                </n-form-item-row>
+            <!-- Domain rows -->
+            <n-space vertical style="margin-bottom: 12px;">
+                <div v-for="(row, idx) in bulkRows" :key="idx">
+                    <n-space align="center">
+                        <n-select
+                            v-model:value="row.domain"
+                            :options="domainOptions"
+                            placeholder="Select Domain"
+                            style="width: 240px;"
+                        />
+                        <n-input-number
+                            v-model:value="row.count"
+                            :min="1"
+                            :max="200"
+                            placeholder="Count"
+                            style="width: 100px;"
+                        />
+                        <n-button
+                            v-if="bulkRows.length > 1"
+                            size="small"
+                            tertiary
+                            type="error"
+                            @click="removeDomainRow(idx)"
+                        >
+                            Remove
+                        </n-button>
+                    </n-space>
+                </div>
 
-                <n-input-number
-                    v-model:value="bulkCount"
-                    :min="1"
-                    :max="200"
-                    placeholder="Count"
-                    style="width: 120px;"
-                />
-
-                <n-button
-                    :loading="generateNameLoading"
-                    @click="generateBulkNames"
-                    type="default"
-                >
-                    Generate Bulk Fake Names
-                </n-button>
+                <n-space align="center">
+                    <n-button size="small" dashed @click="addDomainRow">
+                        + Add Domain
+                    </n-button>
+                    <n-form-item-row v-if="openSettings.prefix" label="Enable Prefix" style="margin-bottom: 0;">
+                        <n-switch v-model:value="enablePrefix" :round="false" />
+                    </n-form-item-row>
+                    <n-button
+                        :loading="generateNameLoading"
+                        @click="generateBulkNames"
+                        type="primary"
+                    >
+                        Generate Bulk Fake Names
+                        <span v-if="bulkRows.length > 0" style="margin-left: 4px; opacity: 0.8;">
+                            ({{ bulkRows.reduce((s, r) => s + (parseInt(r.count) || 0), 0) }} total)
+                        </span>
+                    </n-button>
+                </n-space>
             </n-space>
 
             <!-- Bulk list table -->

@@ -194,6 +194,56 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
 
 ---
 
+## ➕ Adding More Domains
+
+After your initial deployment, you can add additional domains to SuperMail.
+
+### Steps to Add a New Domain
+
+1. **Add domain to Cloudflare Dashboard**
+   - Add your domain to Cloudflare (DNS → Add a domain)
+   - Update nameservers at your registrar
+   - Wait for Active status
+
+2. **Enable Email Routing**
+   - Dashboard → Your domain → Email → Email Routing → Get started
+   - Cloudflare will add MX records automatically → Click "Add records and enable"
+
+3. **Set catch-all rule**
+   - Email Routing → Routing rules → Catch-all address
+   - Action: `Send to a Worker`
+   - Destination: `supermail-worker`
+   - Toggle: Enabled → Save
+
+4. **Update wrangler.toml**
+   - Edit `worker/wrangler.toml`
+   - Add your new domain to these 3 lines:
+   ```toml
+   SEND_MAIL_DOMAINS = ["domain1.com", "domain2.com", "newdomain.com"]
+   DEFAULT_DOMAINS = ["domain1.com", "domain2.com", "newdomain.com"]
+   DOMAINS = ["domain1.com", "domain2.com", "newdomain.com"]
+   ```
+
+5. **Deploy worker**
+   ```bash
+   cd worker
+   npx wrangler deploy
+   ```
+
+That's it! The new domain will appear in the dropdown automatically. No frontend rebuild needed.
+
+### Optional: Email Sending Setup
+
+To send emails from the new domain (with verified badge, better deliverability):
+
+1. Dashboard → Your domain → Email → Email Sending → Add domain
+2. Cloudflare adds DKIM/SPF records → Click "Add records"
+3. Wait for "Verified" status (~5-10 minutes)
+
+**Note:** You can skip this if you only want to receive emails. Sending works without it, but may land in spam.
+
+---
+
 ## 📡 API Reference
 
 ### Authentication
