@@ -684,6 +684,10 @@ export const MESSAGE_REGISTRY = {
       "en": "Logout successful",
       "zh": "退出成功"
     },
+    "mailApi": {
+      "en": "Mail API",
+      "zh": "邮件 API"
+    },
     "mailWebhook": {
       "en": "Mail Webhook",
       "zh": "邮件 Webhook"
@@ -2591,6 +2595,264 @@ export const MESSAGE_REGISTRY = {
     "webhookAllowList": {
       "en": "Webhook Allow List(Enter the mail address that is allowed to use webhook and enter)",
       "zh": "Webhook 白名单(请输入允许使用webhook 的邮箱地址, 回车增加)"
+    }
+  },
+  "views.admin.MailApi": {
+    "title": {
+      "en": "SuperMail API Reference",
+      "zh": "SuperMail API 参考"
+    },
+    "subtitle": {
+      "en": "External integration endpoints for agents and automation scripts",
+      "zh": "供 Agent 和自动化脚本对接的 API 端点"
+    },
+    "versionTag": {
+      "en": "v1 Live",
+      "zh": "v1 已上线"
+    },
+    "intro": {
+      "en": "This tab documents every API endpoint available in SuperMail for external integration. Other AI agents, automation scripts, and workflows can use these endpoints to create email addresses, read parsed mails, and delete addresses programmatically. All endpoints below are verified against the production deployment.",
+      "zh": "本页汇总了 SuperMail 所有可供外部集成的 API 端点。其他 AI Agent、自动化脚本和工作流可以通过这些端点以编程方式创建邮箱、读取已解析邮件和删除地址。以下端点均已在生产环境验证通过。"
+    },
+    "authTitle": {
+      "en": "Authentication",
+      "zh": "认证方式"
+    },
+    "adminAuthLabel": {
+      "en": "Admin Password (x-admin-auth)",
+      "zh": "管理员密码 (x-admin-auth)"
+    },
+    "adminAuthScope": {
+      "en": "— required for all /admin/* routes",
+      "zh": "— 所有 /admin/* 路由必填"
+    },
+    "adminAuthUsage": {
+      "en": "Send as HTTP header: x-admin-auth: <ADMIN_PASSWORD>. Used for create/delete address operations.",
+      "zh": "通过 HTTP 头发送：x-admin-auth: <ADMIN_PASSWORD>。用于创建/删除邮箱地址操作。"
+    },
+    "adminPassword": {
+      "en": "Admin Password",
+      "zh": "管理员密码"
+    },
+    "jwtAuthLabel": {
+      "en": "Address JWT (Bearer)",
+      "zh": "地址 JWT (Bearer)"
+    },
+    "jwtAuthScope": {
+      "en": "— required for all /api/* routes",
+      "zh": "— 所有 /api/* 路由必填"
+    },
+    "jwtAuthUsage": {
+      "en": "The JWT is returned inline in the POST /admin/new_address response — no separate login step needed. Use it as: Authorization: Bearer <jwt>. Each JWT is scoped to a single address.",
+      "zh": "JWT 在 POST /admin/new_address 响应中直接返回，无需单独登录。使用方式：Authorization: Bearer <jwt>。每个 JWT 仅作用于一个邮箱地址。"
+    },
+    "reveal": {
+      "en": "Reveal",
+      "zh": "显示"
+    },
+    "hide": {
+      "en": "Hide",
+      "zh": "隐藏"
+    },
+    "copy": {
+      "en": "Copy",
+      "zh": "复制"
+    },
+    "copyAll": {
+      "en": "Copy All",
+      "zh": "复制全部"
+    },
+    "copySuccess": {
+      "en": "Copied successfully",
+      "zh": "复制成功"
+    },
+    "copyFailed": {
+      "en": "Copy failed",
+      "zh": "复制失败"
+    },
+    "placeholderPassword": {
+      "en": "<admin password>",
+      "zh": "<管理员密码>"
+    },
+    "liveEndpointsTitle": {
+      "en": "Live Endpoints",
+      "zh": "已上线端点"
+    },
+    "statusLive": {
+      "en": "Live",
+      "zh": "已上线"
+    },
+    "curlExample": {
+      "en": "curl example",
+      "zh": "curl 示例"
+    },
+    "requestBody": {
+      "en": "Request body",
+      "zh": "请求体"
+    },
+    "responseBody": {
+      "en": "Response body",
+      "zh": "响应体"
+    },
+    "endpointCreateDesc": {
+      "en": "Create a new email address. Returns JWT inline — no separate login needed.",
+      "zh": "创建新邮箱地址。响应中直接返回 JWT，无需单独登录。"
+    },
+    "endpointCreateNotes": {
+      "en": "The jwt field is the core value of this endpoint — external scripts store (address, jwt, address_id) and use the JWT to poll for mails. Do NOT remove this field or move JWT issuance to a separate login step.",
+      "zh": "jwt 字段是本端点的核心价值 — 外部脚本存储 (address, jwt, address_id) 后用 JWT 轮询邮件。请勿删除此字段或把 JWT 签发挪到单独登录步骤。"
+    },
+    "endpointReadDesc": {
+      "en": "Read parsed mails for the address. MIME is already parsed server-side into text/html/subject/sender.",
+      "zh": "读取该地址的已解析邮件。服务端已将 MIME 解析为 text/html/subject/sender。"
+    },
+    "endpointReadNotes": {
+      "en": "The text field is pre-parsed plaintext — this is the core value over IMAP. External scripts regex OTPs directly from text. Do NOT change this response shape or move text to a follow-up call.",
+      "zh": "text 字段是预解析的纯文本 — 这是相对 IMAP 的核心优势。外部脚本直接用正则从 text 提取验证码。请勿更改此响应结构或把 text 挪到额外请求。"
+    },
+    "endpointDeleteDesc": {
+      "en": "Delete an address by numeric ID. Cascading deletes (raw_mails, address_sender, users_address) handled server-side.",
+      "zh": "按数字 ID 删除邮箱地址。级联删除（raw_mails、address_sender、users_address）由服务端处理。"
+    },
+    "endpointDeleteNotes": {
+      "en": "Pass the numeric address_id from the create response. A planned enhancement will also accept the address string as identifier.",
+      "zh": "传入创建响应中的数字 address_id。计划中的增强将支持以地址字符串作为标识。"
+    },
+    "plannedEndpointsTitle": {
+      "en": "Planned Endpoints (Nice-to-have)",
+      "zh": "计划中端点（非阻塞）"
+    },
+    "plannedEndpointsDesc": {
+      "en": "These additions would remove friction at scale. None are blocking — the current API already works for immediate use cases. Implement in priority order when capacity allows.",
+      "zh": "这些增强可降低规模化时的摩擦，均非阻塞 — 当前 API 已可满足即时使用场景。可在有余力时按优先级顺序实现。"
+    },
+    "plannedBulkCreate": {
+      "en": "Bulk create addresses in a single request",
+      "zh": "单请求批量创建邮箱地址"
+    },
+    "plannedSenderFilter": {
+      "en": "Filter parsed mails by sender domain (OTP-only queries)",
+      "zh": "按发件域名过滤已解析邮件（仅查 OTP）"
+    },
+    "plannedWebhookPush": {
+      "en": "Webhook push at address creation time",
+      "zh": "创建地址时注册 Webhook 推送"
+    },
+    "plannedDeleteByName": {
+      "en": "Delete address by name (not just by id)",
+      "zh": "按地址名删除（不仅限 ID）"
+    },
+    "plannedListDomains": {
+      "en": "List available domains via API",
+      "zh": "通过 API 列出可用域名"
+    },
+    "colPriority": {
+      "en": "Priority",
+      "zh": "优先级"
+    },
+    "colFeature": {
+      "en": "Feature",
+      "zh": "功能"
+    },
+    "colEndpoint": {
+      "en": "Endpoint",
+      "zh": "端点"
+    },
+    "colEstLoc": {
+      "en": "Est. LOC",
+      "zh": "预估代码量"
+    },
+    "colBlocks": {
+      "en": "Blocks farm?",
+      "zh": "是否阻塞？"
+    },
+    "colService": {
+      "en": "Service",
+      "zh": "服务"
+    },
+    "colLimit": {
+      "en": "Free Plan Limit",
+      "zh": "免费套餐限额"
+    },
+    "no": {
+      "en": "No",
+      "zh": "否"
+    },
+    "noData": {
+      "en": "No data",
+      "zh": "暂无数据"
+    },
+    "snippetsTitle": {
+      "en": "Code Snippets — Full Workflow",
+      "zh": "代码示例 — 完整流程"
+    },
+    "snippetsDesc": {
+      "en": "Complete create → poll → delete workflow in three languages. The pattern: create address (get JWT), poll parsed_mails for OTP, delete address when done.",
+      "zh": "三种语言的完整「创建 → 轮询 → 删除」流程。模式：创建地址（获取 JWT）→ 轮询 parsed_mails 提取 OTP → 完成后删除地址。"
+    },
+    "antiPatternsTitle": {
+      "en": "Anti-patterns — Do NOT Break These",
+      "zh": "反模式 — 请勿破坏"
+    },
+    "antiPatternsDesc": {
+      "en": "From the consumer script's perspective. Breaking any of these will break existing integrations.",
+      "zh": "来自消费方脚本的约束。破坏其中任何一条都会导致现有集成失效。"
+    },
+    "antiPatternTurnstile": {
+      "en": "Do NOT add Turnstile to /admin/new_address. Turnstile on the user-facing /api/new_address is fine, but the admin path must stay token-only — automation scripts cannot solve Turnstile.",
+      "zh": "请勿给 /admin/new_address 添加 Turnstile。面向用户的 /api/new_address 可以加，但 admin 路径必须保持仅 Token — 自动化脚本无法通过 Turnstile。"
+    },
+    "antiPatternPassword": {
+      "en": "Do NOT require ENABLE_ADDRESS_PASSWORD = true for the admin create flow. The admin path returns a JWT without a password; that must stay working. ENABLE_ADDRESS_PASSWORD only gates the user-facing /api/address_login.",
+      "zh": "请勿要求 ENABLE_ADDRESS_PASSWORD = true 才能使用 admin 创建流程。admin 路径无需密码即返回 JWT，必须保持可用。ENABLE_ADDRESS_PASSWORD 仅控制面向用户的 /api/address_login。"
+    },
+    "antiPatternJwt": {
+      "en": "Do NOT remove the jwt field from the POST /admin/new_address response. External scripts depend on it being inline. Moving JWT issuance to a separate login step would break the integration.",
+      "zh": "请勿从 POST /admin/new_address 响应中移除 jwt 字段。外部脚本依赖其内联返回。把 JWT 签发挪到单独登录步骤会破坏集成。"
+    },
+    "antiPatternShape": {
+      "en": "Do NOT change the parsed_mails response shape. The text field being pre-parsed plaintext is the core value — if that moves to a different field or requires a follow-up call to /api/mail/:id, every polling loop breaks.",
+      "zh": "请勿更改 parsed_mails 响应结构。text 字段为预解析纯文本，是核心价值 — 若移到其他字段或需额外调用 /api/mail/:id，所有轮询循环都会失效。"
+    },
+    "domainsTitle": {
+      "en": "Active Domains",
+      "zh": "可用域名"
+    },
+    "domain": {
+      "en": "Domain",
+      "zh": "域名"
+    },
+    "domains": {
+      "en": "Domains",
+      "zh": "域名"
+    },
+    "rateLimitsTitle": {
+      "en": "Cloudflare Free Plan Limits",
+      "zh": "Cloudflare 免费套餐限额"
+    },
+    "integrationTitle": {
+      "en": "Integration Context",
+      "zh": "集成上下文"
+    },
+    "intProdUrl": {
+      "en": "Production URL",
+      "zh": "生产地址"
+    },
+    "intSourcePath": {
+      "en": "Source path",
+      "zh": "源码路径"
+    },
+    "intVerifiedConfig": {
+      "en": "Verified config",
+      "zh": "已验证配置"
+    },
+    "intConsumerProject": {
+      "en": "Consumer project",
+      "zh": "消费方项目"
+    },
+    "intSpecDoc": {
+      "en": "Spec document",
+      "zh": "规格文档"
     }
   },
   "views.common.AdminContact": {

@@ -31,6 +31,7 @@ import MailWebhook from './admin/MailWebhook.vue';
 import WorkerConfig from './admin/WorkerConfig.vue';
 import IpBlacklistSettings from './admin/IpBlacklistSettings.vue';
 import AiExtractSettings from './admin/AiExtractSettings.vue';
+import MailApi from './admin/MailApi.vue';
 
 const {
   adminAuth, showAdminAuth, adminTab, loading,
@@ -204,6 +205,9 @@ onMounted(async () => {
       </n-tab-pane>
       <n-tab-pane name="statistics" :tab="t('statistics')">
         <Statistics />
+      </n-tab-pane>
+      <n-tab-pane name="mailApi" :tab="t('mailApi')">
+        <MailApi />
       </n-tab-pane>
       <n-tab-pane name="maintenance" :tab="t('maintenance')">
         <n-tabs type="bar" justify-content="center" animated>

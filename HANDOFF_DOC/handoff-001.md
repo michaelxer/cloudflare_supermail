@@ -4,74 +4,91 @@ HANDOFF CONTEXT
 SESSION INFO
 ------------
 - Handoff number: 001
-- Timestamp: 2026-06-25 04:38 AM (Asia/Jakarta)
-- Context level at handoff: High (multiple features implemented, full codebase exploration completed)
-- Tasks completed this session: 10 of 10 total
+- Timestamp: 2026-08-03 (Asia/Jakarta)
+- Context level at handoff: High (multiple sessions of work, full deployment complete)
+- Tasks completed this session: 20+ tasks across multiple sessions
 
 USER REQUESTS AS-IS
 -------------------
-"Continue working on the Cloudflare temp email project. Read HANDOFF_DOC/handoff-001.md and .credentials/secrets.local.md for full context. begin building Tier 1 features starting with User Login System.. dont broke the program.. so work new merge cherrypick mail project in this folder "D:\CODING PROJECT\cloudflare email\cloudflare_supermail" you can download the cloud mail repo here "D:\CODING PROJECT\cloudflare email\cloud-mail" for this cloudflare_supermail project.. make me github repo cloudflare_supermail and make it public.. make beutiful readme too.."
+- "Continue working on cloudflare_supermail. Read HANDOFF_DOC/handoff-001.md for full context. Resume from: Configure wrangler.toml with Cloudflare credentials and deploy the worker to Cloudflare. Then build and deploy the frontend."
+- "mau tambah domain nih saya sudah punya multiple domain sekarang"
+- "belajarbersama.web.id / kitabisama.my.id / andalanusaha.biz.id / worldwide.web.id / beranibelajar.biz.id"
+- "bulk create itu domainnya ganti satu2 coy bisa gk sebelum pencet tombol generate bulk fake name itu ada milih domain juga"
+- "handoff jgn lupa update"
 
 GOAL
 ----
-Build a full-featured temporary email service (cloudflare_supermail) by merging cloudflare_temp_email with cloud-mail features, deploy to GitHub, and implement Tier 1 features.
+Full-featured self-hosted email platform (cloudflare_supermail) running 100% free on Cloudflare, with multi-domain support, bulk operations, attachments, and Telegram notifications.
 
 WORK COMPLETED THIS SESSION
 ---------------------------
-- [x] Explored both source codebases (cloudflare_temp_email and cloud-mail)
-- [x] Created cloudflare_supermail project folder
-- [x] Copied cloudflare_temp_email files (excluding .git, .wrangler, .credentials)
-- [x] Created proper .gitignore for security
-- [x] Initialized git repository
-- [x] Created GitHub public repo: https://github.com/michaelxer/cloudflare_supermail
-- [x] Implemented Export API (CSV/JSON/EML) - worker/src/mails_api/export_api.ts
-- [x] Added server-side search to mails_crud.ts (subject, sender, date_from, date_to)
-- [x] Added advanced search UI to MailBox.vue with filters
-- [x] Added export modal with format selector
-- [x] Updated i18n translations for new features
-- [x] Created English README.md with badges and documentation
-- [x] Renamed Chinese README to README_ZH.md
-- [x] Committed and pushed all changes to GitHub
+- [x] Configured wrangler.toml with Cloudflare credentials
+- [x] Created D1 database (temp-email-db), KV namespace, deployed worker (supermail-worker)
+- [x] Built and deployed frontend to Cloudflare Pages (supermail-5oe.pages.dev)
+- [x] Set worker route: api.savelokal.my.id → supermail-worker (replaced old temp-email-agent)
+- [x] Rebranded: title changed to "Cloudflare SuperMail" across frontend and i18n
+- [x] Updated copyright: © 2026 michaelxer with GitHub link
+- [x] Removed all external links (linux.do, dreamhunter references) from frontend
+- [x] Rewrote README.md: new hero, use cases, "Why SuperMail?", "100% Free to Run" section
+- [x] Created DEPLOYMENT.md: step-by-step guide for non-technical users
+- [x] Created CHANGELOG.md + CHANGELOG_EN.md: fresh v1.0.0, no old project history
+- [x] Added credits section in README for both source repos
+- [x] Created R2 bucket: supermail-attachments (via wrangler)
+- [x] Configured R2 binding in wrangler.toml (no API tokens needed)
+- [x] Updated worker code to use R2 bindings directly for attachments
+- [x] Added "Keeping It FREE" section in DEPLOYMENT.md with limits table and tips
+- [x] Redesigned About.vue with hero section and 6 feature cards
+- [x] Added "Adding More Domains" section to README.md (5-step guide)
+- [x] Added 5 new domains to Cloudflare: belajarbersama.web.id, kitabisama.my.id, andalanusaha.biz.id, worldwide.web.id, beranibelajar.biz.id
+- [x] Configured Email Routing + catch-all → supermail-worker for all 5 new domains via Cloudflare API
+- [x] Updated wrangler.toml DOMAINS/DEFAULT_DOMAINS/SEND_MAIL_DOMAINS with all 6 domains
+- [x] Fixed BulkCreateAccount.vue: added domain selector dropdown before Generate button
+- [x] Fixed domainOptions computed to return {label, value} objects (was returning raw strings)
+- [x] Fixed domain dropdown not loading (watch on openSettings instead of onMounted)
+- [x] Pushed all changes to GitHub
 
 WORK COMPLETED PREVIOUS SESSIONS
---------------------------------
-- [x] Original cloudflare_temp_email project has: User Login (OAuth2, Passkey), Send Emails (4 backends), Receive Attachments (S3), Admin Panel, Telegram integration
+---------------------------------
+- [x] Explored both source codebases (cloudflare_temp_email and cloud-mail)
+- [x] Created cloudflare_supermail project folder with proper .gitignore
+- [x] Initialized git repository and created GitHub public repo
+- [x] Implemented Export API (CSV/JSON/EML)
+- [x] Added server-side search to mails_crud.ts
+- [x] Added advanced search UI to MailBox.vue
+- [x] Updated i18n translations for new features
 
 PENDING TASKS
 -------------
-- [ ] Configure wrangler.toml with Cloudflare credentials
-- [ ] Create D1 database and run migrations
-- [ ] Deploy worker to Cloudflare
-- [ ] Build and deploy frontend to Cloudflare Pages
-- [ ] Test all features in production
-- [ ] Optional: Merge cloud-mail features (compose upload, ECharts stats)
-- [ ] Optional: Add more email sending backends
+- [ ] Email Sending setup (DKIM/SPF) for 5 new domains — optional, skipped (requires paid plan or manual dashboard setup per domain)
+- [ ] Test bulk create with domain selector on production
+- [ ] Consider adding domain auto-sync script (currently manual wrangler.toml edit + deploy required per new domain)
 
 GIT STATE
 ---------
 - Branch: master
-- Last commit: f7c007d "feat: Add Tier 1 features - Export, Search, Auto-refresh"
+- Last commit: 5eb224e "feat: add multi-domain bulk create + documentation for adding new domains"
 - All changes committed: yes
 - Remote push status: pushed to origin/master
 
 KEY FILES
 ---------
-- worker/src/mails_api/export_api.ts - Export endpoint (CSV/JSON/EML)
-- worker/src/mails_api/mails_crud.ts - Email CRUD with search params
-- worker/src/mails_api/index.ts - API route registration
-- frontend/src/components/MailBox.vue - Mailbox UI with search/export
-- frontend/src/views/Index.vue - Main view with fetchMailData
-- frontend/src/i18n/message-registry.ts - Translation keys
-- README.md - English documentation
-- README_ZH.md - Chinese documentation
+- worker/wrangler.toml - All 6 domains configured, R2 binding, D1, KV
+- worker/src/ - Hono TypeScript worker with email routing, R2 attachments, export API
+- frontend/src/views/admin/BulkCreateAccount.vue - Bulk create with per-domain selector
+- frontend/src/views/index/About.vue - Redesigned about page
+- frontend/src/store/index.js - Copyright michaelxer
+- README.md - Full documentation with multi-domain guide and credits
+- DEPLOYMENT.md - Non-technical step-by-step deployment guide
+- CHANGELOG.md / CHANGELOG_EN.md - Fresh v1.0.0 changelog
 
 IMPORTANT DECISIONS
 -------------------
-- Used D1 SQLite `instr()` for subject search (no subject column in raw_mails)
-- Export limit capped at 500 emails per request
-- Search is server-side (not just client-side filtering)
-- Auto-refresh already existed (configurable interval toggle)
-- Kept both English and Chinese READMEs
+- Used R2 bucket bindings directly (no S3 API tokens) — cleaner and more secure
+- Worker route: api.savelokal.my.id (replaced old temp-email-agent worker)
+- Frontend: production.supermail-5oe.pages.dev (production branch)
+- All 6 domains share one worker — no per-domain deployment needed
+- domainOptions must be {label, value} objects for NSelect component (not raw strings)
+- Email Sending (DKIM/SPF) skipped — requires paid Cloudflare plan for API access
 
 PATTERNS AND CONVENTIONS
 ------------------------
@@ -79,30 +96,32 @@ PATTERNS AND CONVENTIONS
 - Database: Cloudflare D1 (SQLite)
 - Auth: JWT tokens in Authorization header
 - API pattern: REST with Hono context (c.get("jwtPayload"), c.env.DB)
-- Frontend state: Vue composables with useGlobalState()
+- Frontend state: Vue composables with useGlobalState() → openSettings.value.domains
 - i18n: message-registry.ts with nested component keys
+- NSelect requires options as {label: string, value: string}[] not string[]
 
 EXPLICIT CONSTRAINTS
 --------------------
-- User said "dont broke the program" - all changes are additive, no existing functionality removed
-- Project uses ultrawork mode protocols (certainty before implementation, TDD, manual QA)
+- Never commit secrets or credentials (wrangler.toml is in .gitignore)
 - Never use `as any` or type assertions
-- Never commit secrets or credentials
+- "dont broke the program" — all changes are additive
+- Auto-push disabled — always confirm before pushing to remote
 
 BLOCKERS AND WARNINGS
 ---------------------
-- cloud-mail directory was empty (needed cloning, but we worked from cloudflare_temp_email instead)
-- Pre-existing TypeScript errors in getMail function (resolveRawEmailRow typing) - not introduced by our changes
-- No tests written yet for new features
+- Email Sending (DKIM/SPF) for new domains requires manual dashboard setup or paid API access
+- Adding a new domain requires: (1) Cloudflare setup, (2) Email Routing + catch-all, (3) edit wrangler.toml, (4) wrangler deploy — not automatic
+- wrangler OAuth token expires periodically — run `npx wrangler login` when needed
 
 CONTEXT FOR CONTINUATION
 ------------------------
-- GitHub repo is live: https://github.com/michaelxer/cloudflare_supermail
-- All Tier 1 features are implemented and pushed
-- Next step is deployment: configure wrangler.toml, create D1 database, deploy
-- The project is a fork/copy of dreamhunter2333/cloudflare_temp_email with new features added
-- User may want to merge more cloud-mail features later
+- Live frontend: https://production.supermail-5oe.pages.dev
+- Admin panel: https://production.supermail-5oe.pages.dev/en/admin (password: in .credentials/secrets.local.md)
+- Worker API: https://api.savelokal.my.id
+- GitHub: https://github.com/michaelxer/cloudflare_supermail
+- All 6 domains active: savelokal.my.id, belajarbersama.web.id, kitabisama.my.id, andalanusaha.biz.id, worldwide.web.id, beranibelajar.biz.id
+- R2 bucket: supermail-attachments (bound as ATTACHMENTS in worker)
 
 NEXT SESSION PROMPT
 -------------------
-Continue working on cloudflare_supermail. Read HANDOFF_DOC/handoff-001.md for full context. Resume from: Configure wrangler.toml with Cloudflare credentials and deploy the worker to Cloudflare. Then build and deploy the frontend.
+Continue working on cloudflare_supermail. Read HANDOFF_DOC/handoff-001.md for full context. Resume from: Test bulk create with domain selector on production, then continue with next feature or domain additions.

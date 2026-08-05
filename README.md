@@ -273,6 +273,122 @@ GET /api/export?format=json&limit=100
 Authorization: Bearer <token>
 ```
 
+### 🤖 External Integration (For Agents & Automation Scripts)
+
+SuperMail provides a clean API for external AI agents, automation scripts, and other workflows to create disposable email addresses, read parsed mails, and delete addresses programmatically — no IMAP, no browser automation, no Turnstile.
+
+> **In-app reference**: Open the admin panel → **Mail API** tab for full interactive documentation with copy-paste curl/Python/JavaScript examples.
+
+#### Authentication
+
+| Gate | Header | Scope |
+|------|--------|-------|
+| Admin password | `x-admin-auth: <ADMIN_PASSWORDS[0]>` | All `/admin/*` routes |
+| Address JWT | `Authorization: Bearer <jwt>` | All `/api/*` routes |
+
+The JWT is returned **inline** in the create-address response — no separate login step needed.
+
+#### Live Endpoints
+
+**1. Create address** (returns JWT inline)
+```http
+POST /admin/new_address
+x-admin-auth: <admin-password>
+Content-Type: application/json
+{ "name": "agent123", "domain": "yourdomain.com", "enablePrefix": false, "enableRandomSubdomain": false }
+```
+Response:
+```json
+{ "jwt": "eyJ...", "address": "agent123@yourdomain.com", "password": null, "address_id": 1234 }
+```
+
+**2. Read parsed mails** (MIME pre-parsed server-side)
+```http
+GET /api/parsed_mails?limit=20&offset=0
+Authorization: Bearer <jwt>
+```
+Response:
+```json
+{
+  "results": [
+    { "id": 5678, "address": "...", "sender": "no-reply@example.com",
+      "subject": "Your verification code", "text": "Your code is 482-915. ...",
+      "html": "<html>...", "attachments": [], "created_at": "..." }
+  ],
+  "count": 1
+}
+```
+The `text` field is pre-parsed plaintext — regex OTPs directly from it, no MIME parsing needed on the client side.
+
+**3. Delete address** (cascading deletes handled server-side)
+```http
+DELETE /admin/delete_address/<address_id>
+x-admin-auth: <admin-password>
+```
+
+#### Full Workflow Example (curl)
+
+```bash
+# 1. Create address → get JWT
+curl -X POST https://your-worker.workers.dev/admin/new_address \
+  -H "x-admin-auth: <admin-password>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"agent123","domain":"yourdomain.com","enablePrefix":false,"enableRandomSubdomain":false}'
+
+# 2. Poll for parsed mails (use JWT from step 1)
+curl "https://your-worker.workers.dev/api/parsed_mails?limit=20&offset=0" \
+  -H "Authorization: Bearer eyJ..."
+
+# 3. Delete address when done
+curl -X DELETE https://your-worker.workers.dev/admin/delete_address/1234 \
+  -H "x-admin-auth: <admin-password>"
+```
+
+Python and JavaScript examples are available in the **Mail API** tab in the admin panel.
+
+#### Planned Endpoints (Nice-to-have, Not Blocking)
+
+| Priority | Feature | Endpoint | Est. LOC |
+|----------|---------|----------|----------|
+| HIGH | Bulk create addresses | `POST /admin/bulk_new_address` | ~40 |
+| HIGH | Filter parsed mails by sender | `GET /api/parsed_mails?sender=x.ai` | ~10 |
+| MEDIUM | Webhook push at creation | `POST /admin/new_address` accepts `webhook_url` | ~15 |
+| LOW | Delete address by name | `DELETE /admin/delete_address/:idorName` | ~5 |
+| LOW | List available domains | `GET /api/domains` | ~3 |
+
+See [`HANDOFF_DOC/SUPERMAIL-API-REQUIREMENTS.md`](HANDOFF_DOC/SUPERMAIL-API-REQUIREMENTS.md) for the full integration spec.
+
+#### ⚠️ Anti-patterns (Do NOT Break These)
+
+- **Do NOT add Turnstile to `/admin/new_address`** — automation scripts cannot solve Turnstile. The admin path must stay token-only.
+- **Do NOT require `ENABLE_ADDRESS_PASSWORD = true` for admin create** — the admin path returns JWT without a password. `ENABLE_ADDRESS_PASSWORD` only gates the user-facing `/api/address_login`.
+- **Do NOT remove the `jwt` field from `POST /admin/new_address` response** — external scripts depend on it being inline.
+- **Do NOT change the `parsed_mails` response shape** — the `text` field being pre-parsed plaintext is the core value. Moving it to a different field or requiring a follow-up call breaks every polling loop.
+
+#### Integration Prompt for Other Agents
+
+Copy this to any AI agent (Cursor, ChatGPT, Claude, etc) that needs to integrate with SuperMail:
+
+```text
+I have a SuperMail email platform running on Cloudflare with a clean API 
+for external integration. You can use it for disposable email addresses, 
+OTP retrieval, or any automation workflow needing email.
+
+PRODUCTION URL: https://production.supermail-5oe.pages.dev
+ADMIN PASSWORD: <set in wrangler.toml ADMIN_PASSWORDS>
+
+QUICK START — 3 endpoints:
+1. POST /admin/new_address (header: x-admin-auth) → returns {jwt, address, address_id}
+2. GET /api/parsed_mails?limit=20 (header: Authorization: Bearer <jwt>) → returns pre-parsed mails with "text" field
+3. DELETE /admin/delete_address/<address_id> (header: x-admin-auth)
+
+The "text" field in parsed_mails is pre-parsed plaintext — regex OTPs 
+directly, no MIME parsing needed client-side.
+
+Full docs: open admin panel → Mail API tab.
+Spec: HANDOFF_DOC/SUPERMAIL-API-REQUIREMENTS.md
+```
+
 ---
 
 ## 📁 Project Structure
